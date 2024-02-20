@@ -1,0 +1,45 @@
+<div class="container">
+    <div class="card container" style="max-width: 500px;margin-top: 14%;margin-bottom: 14%;">
+        <form action="/login" method="POST" class="card-body" id="login-form">
+            <fieldset>
+                <legend>
+                    <h3>LOGIN</h3>
+                </legend>
+                <div class="form-group mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Email"
+                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+                    <small class="h-3"></small>
+
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Password"
+                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+                        <small class="h-3"></small>
+                    <i class="bi bi-eye-slash" id="togglePassword"
+                        style="position: relative;z-index: 8; left: 400px;top: -30px; width: 0%; cursor: pointer;"></i>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <a class="text-muted" href="#">Forgot password?</a>
+
+                <div class="form-group text-center mb-3 my-4">
+                    <span><br> or </br> </span>
+                </div>
+
+                <div class="form-group ">
+
+                    <ul class="form-group list_none text-center mb-3">
+                        <li><a href="#" class="btn btn-facebook hover-up ">Login With Facebook</a></li>
+                        <li><a href="#" class="btn btn-google hover-up">Login With Google</a></li>
+                    </ul>
+                </div>
+
+
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+<script src="/javascript/loginValidation.js"></script>
