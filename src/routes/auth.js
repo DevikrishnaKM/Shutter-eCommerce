@@ -11,8 +11,15 @@ router
 router
     .route("/register")
     .get(authController.getRegister)
-    // .post(authController.userLogin);
+    .post(authController.userRegister);
+router
+    .route("/verify-otp")
+    .get( authController.getVerifyOtp )
 
+    router
+  .route("/forgot-password")
+  .get( authController.getForgotPass)
+//   .post(forgotPassValidation, authController.forgotPass);
 
 
 module.exports = router;

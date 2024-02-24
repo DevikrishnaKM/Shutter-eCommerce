@@ -1,0 +1,39 @@
+<style>
+    #errorMessage {
+        display: none;
+    }
+</style>
+
+<div class="container">
+    <div class="card container pt-3" style="max-width: 500px;margin-top: 14%;margin-bottom: 14%; margin-left: 30%; ">
+        <form action="/verify-otp" method="POST" class="card-body" id="">
+            <fieldset>
+                <legend>
+                    <h3>Email Veification</h3>
+                </legend>
+                <div class="form-group mb-3">
+                    <label for="otp" class="form-label">Enter OTP:</label>
+                    <input type="text" id="otp" name="otp" class="form-control" required>
+                </div>
+                <!-- Add Verify Email button -->
+                <button onclick="handleOtp()" class="btn btn-primary">Verify Email</button>
+
+
+                <div class="text-muted text-center pt-25">
+                    <p id="timer">Time left: <span id="countdown">60</span> seconds</p>
+                    <a id="resendLink" onclick="resendOtp()" style="display:none;">Resend OTP</a>
+                </div>
+
+
+                <div class="alert alert-danger" id="errorMessage">
+
+                </div>
+
+
+                <div class="text-muted text-center pt-25">
+                    Already verified? <a href="/login">Login now</a>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>

@@ -1,7 +1,7 @@
 <div class="container">
     <div class="card container" style="max-width: 500px;margin-top: 14%;margin-bottom: 14%;">
         <h3>Sign Up</h3>
-        <form class="row login_form" action="/register" method="POST" id="register_form">
+        <form  action="/register" method="POST" class="row login_form" id="register_form">
             <div class="col-md-12 form-group">
                 <input type="text" class="form-control" id="username" name="username" placeholder="Username"
                     onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'">
@@ -35,8 +35,8 @@
                         onblur="this.placeholder = 'Password'">
                     <i class="bi bi-eye-slash" id="togglePassword"
                         style="position: relative;z-index: 8; left: -30px; width: 0%; cursor: pointer;"></i>
+                        <small></small>
                 </div>
-                <small></small>
             </div>
             <div class="col-md-12 form-group">
                 <div class="d-flex align-items-center">
@@ -45,8 +45,8 @@
                         onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'">
                     <i class="bi bi-eye-slash" id="togglePasswordConfirm"
                         style="position: relative;z-index: 8; left: -30px; width: 0%; cursor: pointer;"></i>
+                        <small></small>
                 </div>
-                <small></small>
             </div>
 
             <div class="col-md-12 form-group">

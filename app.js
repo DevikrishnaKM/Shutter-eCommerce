@@ -5,8 +5,13 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const expressLayouts=require('express-ejs-layouts');
+const session = require("express-session");
+const flash = require("connect-flash");
+const MongoStore = require("connect-mongo");
+const {v4:uuidv4}=require('uuid');
 
 const authRouter = require("./src/routes/auth");
+const shopRouter=require('./src/routes/shop')
 const usersRouter = require('./src/routes/users');
 
 const connectDB =require('./src/config/db');
@@ -23,13 +28,40 @@ app.set('view engine', 'ejs');
 app.use(expressLayouts)
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.set('layout','./layouts/main.ejs')
+app.set('layout','./layouts/userLayout.ejs')
+
+app.use(
+  session({
+    secret: uuidv4(),
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
+);
+
+app.use(flash());
 
 app.use('/', authRouter);
 app.use('/users', usersRouter);
+app.use('/',shopRouter);
+
+
+// Custom middleware to expose flash messages to views
+app.use((req, res, next) => {
+  if (req.user) {
+    res.locals.user = req.user;
+  }
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
