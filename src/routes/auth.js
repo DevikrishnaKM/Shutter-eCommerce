@@ -7,7 +7,7 @@ const authController = require('../controller/authController')
 router
     .route("/login")
     .get(authController.getLogin)
-    // .post(authController.userLogin);
+    .post(authController.userLogin);
 router
     .route("/register")
     .get(authController.getRegister)
@@ -15,11 +15,32 @@ router
 router
     .route("/verify-otp")
     .get( authController.getVerifyOtp )
+    .post(authController.verifyOtp);
+router
+    .route("/forgot-password/verify-otp")
+    .get(authController.getForgotPassOtp )
+  
+router.route("/resend-otp").get(authController.resendOTP);
 
-    router
+router
   .route("/forgot-password")
   .get( authController.getForgotPass)
-//   .post(forgotPassValidation, authController.forgotPass);
+  .post(authController.forgotPass);
+
+router
+  .route("/reset-password")
+  .get( authController.getResetPass)
+  .post( authController.resetPass);
+
+router
+  .route("/admin/login")
+  .get(authController.getAdminLogin)
+//   .post(loginValidation, authController.adminLogin);
+
+router
+  .route("/admin/register")
+  .get(authController.getAdminRegister)
+//   .post(loginValidation, authController.adminLogin);
 
 
 module.exports = router;

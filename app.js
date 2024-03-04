@@ -10,11 +10,13 @@ const flash = require("connect-flash");
 const MongoStore = require("connect-mongo");
 const {v4:uuidv4}=require('uuid');
 
+const connectDB =require('./src/config/db');
+const passport = require("./src/config/passport-config");
+
 const authRouter = require("./src/routes/auth");
+// const adminRouter = require("./src/routes/admin");
 const shopRouter=require('./src/routes/shop')
 const usersRouter = require('./src/routes/users');
-
-const connectDB =require('./src/config/db');
 
 
 const app = express();
@@ -47,9 +49,15 @@ app.use(
 
 app.use(flash());
 
+// passport session
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 app.use('/', authRouter);
 app.use('/users', usersRouter);
 app.use('/',shopRouter);
+// app.use("/admin", adminRouter);
 
 
 // Custom middleware to expose flash messages to views
