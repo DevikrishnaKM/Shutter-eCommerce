@@ -11,11 +11,15 @@ const customFields = {
 
 async function authenticateUser(email, password, done) {
   const user = await User.findOne({ email, isAdmin: false });
+  console.log(user);
   if (!user) {
+
     return done(null, false, { message: "No user found with that email" });
   }
 
-  const isValid = await user.matchPassword(password);
+  // const isValid = await user.matchPassword(password);
+  
+  const isValid = await bcrypt.compare(password, user.password);
 
   console.log(isValid);
 

@@ -369,7 +369,7 @@ module.exports = {
     });
   },
   resetPass: async (req, res) => {
-    // console.log(req.body);
+    console.log(req.body);
     const errors = validationResult(req);
     // console.log(errors);
     if (!errors.isEmpty()) {
@@ -390,17 +390,18 @@ module.exports = {
       }
 
       const user = await User.findById(userId);
-
+      console.log(user);
+      const hashPwd=await bcrypt.hash(password,10)
       if (user) {
         const updatedUser = await User.updateOne(
-          { id: user._id },
+          { _id: user._id },
           {
             $set: {
-              password: password,
+              password: hashPwd,
             },
           }
         );
-
+          console.log(updatedUser);
         if (updatedUser) {
           console.log("User password reseted");
 
