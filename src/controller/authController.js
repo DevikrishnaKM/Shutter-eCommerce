@@ -58,7 +58,7 @@ module.exports = {
             delete req.session.verifyToken
         }
         const locals = {
-            title: "SoleStride - Register",
+            title: "Shutter- Register",
         };
         res.render('auth/user/register', {
             locals,
@@ -139,10 +139,10 @@ module.exports = {
         const user = await User.findOne({ email: req.body.email, isAdmin: false });
 
         if (user) {
-            // if (user.isBlocked) {
-            //     req.flash("error", "You are blocked by the admin!!!!!!");
-            //     return res.redirect("/login");
-            // }
+            if (user.isBlocked) {
+                req.flash("error", "You are blocked by the admin!!!!!!");
+                return res.redirect("/login");
+            }
 
             if (!user.isVerified) {
                 if (!req.session.verifyToken) {
@@ -302,7 +302,7 @@ module.exports = {
    */
   getForgotPass: async (req, res) => {
     const locals = {
-      title: "SoleStride - Forgot Password",
+      title: "Shutter - Forgot Password",
     };
     res.render("auth/user/forgotPassword", {
       locals,
