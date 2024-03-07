@@ -14,7 +14,7 @@ const connectDB =require('./src/config/db');
 const passport = require("./src/config/passport-config");
 
 const authRouter = require("./src/routes/auth");
-// const adminRouter = require("./src/routes/admin");
+const adminRouter = require("./src/routes/admin");
 const shopRouter=require('./src/routes/shop')
 const usersRouter = require('./src/routes/users');
 
@@ -28,7 +28,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(expressLayouts)
-//app.use(logger('dev'));
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -55,9 +55,9 @@ app.use(passport.session());
 
 
 app.use('/', authRouter);
-app.use('/users', usersRouter);
+app.use('/users/', usersRouter);
 app.use('/',shopRouter);
-// app.use("/admin", adminRouter);
+app.use("/admin", adminRouter);
 
 
 // Custom middleware to expose flash messages to views

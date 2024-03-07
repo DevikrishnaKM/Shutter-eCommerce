@@ -35,12 +35,12 @@ router
 router
   .route("/admin/login")
   .get(authController.getAdminLogin)
-//   .post(loginValidation, authController.adminLogin);
+  .post( authController.adminLogin);
 
 router
   .route("/admin/register")
   .get(authController.getAdminRegister)
-//   .post(loginValidation, authController.adminLogin);
+  .post( authController.adminLogin);
 
 
 module.exports = router;
