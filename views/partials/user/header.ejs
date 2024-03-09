@@ -1,141 +1,155 @@
 <header class="header header-6">
-    <div class="header-middle">
-        <div class="container">
-            <div class="header-left">
-                <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
-                    <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                    <form action="#" method="get">
-                        <div class="header-search-wrapper search-wrapper-wide">
-                            <label for="q" class="sr-only">Search</label>
-                            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                            <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
-                        </div><!-- End .header-search-wrapper -->
-                    </form>
-                </div><!-- End .header-search -->
-            </div>
-            <div class="header-center">
-                <a href="" class="logo">
-                    <img src="assets/images/shutter.png" alt="Molla Logo" width="125" height="70">
-                </a>
-            </div><!-- End .header-left -->
-
-            
-
-            <div class="header-right">
-               
-                  <a href="/login" title="My account">
-                     <div class="icon">
-                        <i class="icon-user"></i>
-                     </div>
-                   
-                  </a>
+  <div class="header-middle">
+    <div class="container">
+      <div class="header-left">
+        <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
+          <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+          <form action="#" method="get">
+            <div class="header-search-wrapper search-wrapper-wide">
+              <label for="q" class="sr-only">Search</label>
+              <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+              <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
+            </div><!-- End .header-search-wrapper -->
+          </form>
+        </div><!-- End .header-search -->
+      </div>
+      <div class="header-center">
+        <a href="" class="logo">
+          <img src="assets/images/shutter.png" alt="Molla Logo" width="125" height="70">
+        </a>
+      </div><!-- End .header-left -->
 
 
-                <a href="wishlist.html" class="wishlist-link">
-                    <i class="icon-heart-o"></i>
-                  
-                </a>
 
-                <div class="dropdown cart-dropdown">
-                    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-                        <i class="icon-shopping-cart"></i>
-                       
-                    </a>
-                </div><!-- End .cart-dropdown -->
-            </div>
-        </div><!-- End .container -->
-    </div><!-- End .header-middle -->
+      <div class="header-right">
 
-    <div class="header-bottom sticky-header">
-        <div class="container">
-            <div class="header-left">
-                <nav class="main-nav ">
-                    <ul class="menu sf-arrows">
-                       
-                        <li class="megamenu-container active">
-                            <a href="" class="sf-with-ul">Home</a>
+        <% if (typeof user !== 'undefined') { %>
+        <% if (user) { %>
+        <div class="nav-item navbar-icon-link">
+          <a href="/user/profile" class="navbar-icon-link">
+            <i class="bi bi-person text-success"></i>
+            <span class="text-sm ms-2 ms-lg-0 text-uppercase text-sm fw-bold d-none d-sm-inline d-lg-none">
+              Account
+            </span>
+          </a>
+        </div>
+        <% } %>
+        <% } else { %>
+       
+            <a href="/login" title="login">
+              <div class="icon">
+                <i class="icon-user"></i>
+              </div>
+    
+            </a>
+        <% } %>
 
-                        </li>
-                        <li>
-                            <a href="category.html" class="sf-with-ul">Shop</a>
 
-                            <div class="megamenu megamenu-md">
-                                <div class="row no-gutters">
-                                    <div class="col-md-8">
-                                        <div class="menu-col">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="menu-title">Shop with sidebar</div><!-- End .menu-title -->
-                                                    <ul>
-                                                        <li><a href="category-list.html">Shop List</a></li>
-                                                        <li><a href="category-2cols.html">Shop Grid 2 Columns</a></li>
-                                                        <li><a href="category.html">Shop Grid 3 Columns</a></li>
-                                                        <li><a href="category-4cols.html">Shop Grid 4 Columns</a></li>
-                                                        <li><a href="category-market.html"><span>Shop Market<span class="tip tip-new">New</span></span></a></li>
-                                                    </ul>
+        <a href="wishlist.html" class="wishlist-link">
+          <i class="icon-heart-o"></i>
 
-                                                    <div class="menu-title">Shop no sidebar</div><!-- End .menu-title -->
-                                                    <ul>
-                                                        <li><a href="category-boxed.html"><span>Shop Boxed No Sidebar<span class="tip tip-hot">Hot</span></span></a></li>
-                                                        <li><a href="category-fullwidth.html">Shop Fullwidth No Sidebar</a></li>
-                                                    </ul>
-                                                </div><!-- End .col-md-6 -->
+        </a>
 
-                                                <div class="col-md-6">
-                                                    <div class="menu-title">Product Category</div><!-- End .menu-title -->
-                                                    <ul>
-                                                        <li><a href="product-category-boxed.html">Product Category Boxed</a></li>
-                                                        <li><a href="product-category-fullwidth.html"><span>Product Category Fullwidth<span class="tip tip-new">New</span></span></a></li>
-                                                    </ul>
-                                                    <div class="menu-title">Shop Pages</div><!-- End .menu-title -->
-                                                    <ul>
-                                                        <li><a href="cart.html">Cart</a></li>
-                                                        <li><a href="checkout.html">Checkout</a></li>
-                                                        <li><a href="wishlist.html">Wishlist</a></li>
-                                                        <li><a href="dashboard.html">My Account</a></li>
-                                                        <li><a href="#">Lookbook</a></li>
-                                                    </ul>
-                                                </div><!-- End .col-md-6 -->
-                                            </div><!-- End .row -->
-                                        </div><!-- End .menu-col -->
-                                    </div><!-- End .col-md-8 -->
+        <div class="dropdown cart-dropdown">
+          <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="icon-shopping-cart"></i>
 
-                                    <div class="col-md-4">
-                                        <div class="banner banner-overlay">
-                                            <a href="category.html" class="banner banner-menu">
-                                                <img src="assets/images/menu/banner-1.jpg" alt="Banner">
+          </a>
+        </div><!-- End .cart-dropdown -->
+      </div>
+    </div><!-- End .container -->
+  </div><!-- End .header-middle -->
 
-                                                <div class="banner-content banner-content-top">
-                                                    <div class="banner-title text-white">Last <br>Chance<br><span><strong>Sale</strong></span></div><!-- End .banner-title -->
-                                                </div><!-- End .banner-content -->
-                                            </a>
-                                        </div><!-- End .banner banner-overlay -->
-                                    </div><!-- End .col-md-4 -->
-                                </div><!-- End .row -->
-                            </div><!-- End .megamenu megamenu-md -->
-                        </li>
-                        <li>
-                            <a href="product.html" class="sf-with-ul">About</a>
+  <div class="header-bottom sticky-header">
+    <div class="container">
+      <div class="header-left">
+        <nav class="main-nav ">
+          <ul class="menu sf-arrows">
 
-                            
-                        </li>
-                        <li>
-                            <a href="product.html" class="sf-with-ul">Contact</a>
+            <li class="megamenu-container active">
+              <a href="" class="sf-with-ul">Home</a>
 
-                           
-                        </li>
-                        
-                       
-                       
-                    </ul><!-- End .menu -->
-                </nav><!-- End .main-nav -->
+            </li>
+            <li>
+              <a href="category.html" class="sf-with-ul">Shop</a>
 
-                <button class="mobile-menu-toggler">
-                    <span class="sr-only">Toggle mobile menu</span>
-                    <i class="icon-bars"></i>
-                </button>
-            </div><!-- End .header-left -->
+              <div class="megamenu megamenu-md">
+                <div class="row no-gutters">
+                  <div class="col-md-8">
+                    <div class="menu-col">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="menu-title">Shop with sidebar</div><!-- End .menu-title -->
+                          <ul>
+                            <li><a href="category-list.html">Shop List</a></li>
+                            <li><a href="category-2cols.html">Shop Grid 2 Columns</a></li>
+                            <li><a href="category.html">Shop Grid 3 Columns</a></li>
+                            <li><a href="category-4cols.html">Shop Grid 4 Columns</a></li>
+                            <li><a href="category-market.html"><span>Shop Market<span class="tip tip-new">New</span></span></a></li>
+                          </ul>
 
-        </div><!-- End .container -->
-    </div><!-- End .header-bottom -->
+                          <div class="menu-title">Shop no sidebar</div><!-- End .menu-title -->
+                          <ul>
+                            <li><a href="category-boxed.html"><span>Shop Boxed No Sidebar<span class="tip tip-hot">Hot</span></span></a></li>
+                            <li><a href="category-fullwidth.html">Shop Fullwidth No Sidebar</a></li>
+                          </ul>
+                        </div><!-- End .col-md-6 -->
+
+                        <div class="col-md-6">
+                          <div class="menu-title">Product Category</div><!-- End .menu-title -->
+                          <ul>
+                            <li><a href="product-category-boxed.html">Product Category Boxed</a></li>
+                            <li><a href="product-category-fullwidth.html"><span>Product Category Fullwidth<span class="tip tip-new">New</span></span></a></li>
+                          </ul>
+                          <div class="menu-title">Shop Pages</div><!-- End .menu-title -->
+                          <ul>
+                            <li><a href="cart.html">Cart</a></li>
+                            <li><a href="checkout.html">Checkout</a></li>
+                            <li><a href="wishlist.html">Wishlist</a></li>
+                            <li><a href="dashboard.html">My Account</a></li>
+                            <li><a href="#">Lookbook</a></li>
+                          </ul>
+                        </div><!-- End .col-md-6 -->
+                      </div><!-- End .row -->
+                    </div><!-- End .menu-col -->
+                  </div><!-- End .col-md-8 -->
+
+                  <div class="col-md-4">
+                    <div class="banner banner-overlay">
+                      <a href="category.html" class="banner banner-menu">
+                        <img src="assets/images/menu/banner-1.jpg" alt="Banner">
+
+                        <div class="banner-content banner-content-top">
+                          <div class="banner-title text-white">Last <br>Chance<br><span><strong>Sale</strong></span></div><!-- End .banner-title -->
+                        </div><!-- End .banner-content -->
+                      </a>
+                    </div><!-- End .banner banner-overlay -->
+                  </div><!-- End .col-md-4 -->
+                </div><!-- End .row -->
+              </div><!-- End .megamenu megamenu-md -->
+            </li>
+            <li>
+              <a href="product.html" class="sf-with-ul">About</a>
+
+
+            </li>
+            <li>
+              <a href="product.html" class="sf-with-ul">Contact</a>
+
+
+            </li>
+
+
+
+          </ul><!-- End .menu -->
+        </nav><!-- End .main-nav -->
+
+        <button class="mobile-menu-toggler">
+          <span class="sr-only">Toggle mobile menu</span>
+          <i class="icon-bars"></i>
+        </button>
+      </div><!-- End .header-left -->
+
+    </div><!-- End .container -->
+  </div><!-- End .header-bottom -->
 </header><!-- End .header -->

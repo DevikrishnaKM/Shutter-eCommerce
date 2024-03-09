@@ -1,73 +1,56 @@
+<% if ( typeof users !='undefined' && typeof products !='undefined' &&  typeof orders !='undefined' &&  typeof usersCount !='undefined' && typeof usersCount !='undefined' && typeof productsCount !='undefined' && typeof ordersCount !='undefined' ) { %>
+
+
 <main class="main my-5">
-    <div class="d-column d-lg-flex justify-content-center m-0">
-      <div
-        class="col-lg-6 d-flex flex-column flex-sm-row justify-content-around mt-3"
-      >
-        <div
-          id="usersList"
-          class="col-sm-5 d-flex flex-column justify-content-center align-items-center"
-          style="
+  <div class="d-column d-lg-flex justify-content-center m-0">
+    <div class="col-lg-6 d-flex flex-column flex-sm-row justify-content-around mt-3">
+      <div id="usersList" class="col-sm-5 d-flex flex-column justify-content-center align-items-center" style="
             border-radius: 5px;
             height: 160px;
             background-color: rgba(62, 15, 180, 0.377);
-          "
-        >
-          <div style="font-size: 2rem; color: rgb(0, 0, 0)"><%- usersCount %></div>
-  
-          <div class="text-center mt-3 font-weight-bold h4">Total Users</div>
-        </div>
-  
-        <div
-          id="productsList"
-          class="col-sm-5 d-flex flex-column justify-content-center align-items-center"
-          style="
+          ">
+        <div style="font-size: 2rem; color: rgb(0, 0, 0)"><%- usersCount %></div>
+
+        <div class="text-center mt-3 font-weight-bold h4">Total Users</div>
+      </div>
+
+      <div id="productsList" class="col-sm-5 d-flex flex-column justify-content-center align-items-center" style="
             border-radius: 5px;
             height: 160px;
             background-color: rgba(251, 144, 5, 0.377);
-          "
-        >
-          <div style="font-size: 2rem; color: rgb(0, 0, 0)"><%- productsCount %></div>
-  
-          <div class="text-center mt-3 font-weight-bold h4">Total Products</div>
-        </div>
+          ">
+        <div style="font-size: 2rem; color: rgb(0, 0, 0)"><%- productsCount %></div>
+
+        <div class="text-center mt-3 font-weight-bold h4">Total Products</div>
       </div>
-  
-      <div
-        class="col-lg-6 d-flex flex-column flex-sm-row justify-content-around mt-3"
-      >
-        <div
-          id="ordersList"
-          class="col-sm-5 d-flex flex-column justify-content-center align-items-center"
-          style="
+    </div>
+
+    <div class="col-lg-6 d-flex flex-column flex-sm-row justify-content-around mt-3">
+      <div id="ordersList" class="col-sm-5 d-flex flex-column justify-content-center align-items-center" style="
             border-radius: 5px;
             height: 160px;
             background-color: rgba(15, 180, 89, 0.377);
-          "
-        >
-          <div style="font-size: 2rem; color: rgb(0, 0, 0)"><%- ordersCount %></div>
-  
-          <div class="text-center mt-3 font-weight-bold h4">Total Orders</div>
-        </div>
-  
-        <div
-          id="salesList"
-          class="col-sm-5 d-flex flex-column justify-content-center align-items-center"
-          style="
+          ">
+        <div style="font-size: 2rem; color: rgb(0, 0, 0)"><%- ordersCount %></div>
+
+        <div class="text-center mt-3 font-weight-bold h4">Total Orders</div>
+      </div>
+
+      <div id="salesList" class="col-sm-5 d-flex flex-column justify-content-center align-items-center" style="
             border-radius: 5px;
             height: 160px;
             background-color: rgba(14, 125, 244, 0.377);
-          "
-        >
-          <div style="font-size: 2rem"></div>
-  
-          <div class="text-center mt-3 font-weight-bold h4">
-            Total Revenue (rs)
-          </div>
+          ">
+        <div style="font-size: 2rem"></div>
+
+        <div class="text-center mt-3 font-weight-bold h4">
+          Total Revenue (rs)
         </div>
       </div>
     </div>
-  
-    <!-- <div
+  </div>
+
+  <!-- <div
       class="d-flex flex-column align-items-center justify-content-center m-lg-5"
     >
       <h2 class="text-center m-5">Total Sales Revenue Chart</h2>
@@ -186,4 +169,5 @@
         </button>
       </div>
     </div> -->
-  </main>
+</main>
+<% } %>

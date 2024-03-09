@@ -26,24 +26,6 @@
 <section class="admin-login_box_area section-margin my-5">
   <div class="container">
     <div class="row">
-      <div class="row">
-        <% if (error && error.length> 0) { %>
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-          <% error.forEach(element=> { %>
-          <span><%- element %></span>
-          <% }) %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <% } %>
-        <% if (success && success.length> 0) { %>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-          <% success.forEach(element=> { %>
-          <span><%- element %></span>
-          <% }) %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <% } %>
-      </div>
       <div class="col-lg-6">
         <div class="admin-login_box_img bg-body-success">
           <div class="hover">

@@ -85,7 +85,7 @@ module.exports = {
     }
   },
   adminLogin: async (req, res, next) => {
-    // console.log(req.body);
+    console.log(req.body);
     passport.authenticate("admin-local", (err, user, info) => {
       if (err) {
         console.log(err);

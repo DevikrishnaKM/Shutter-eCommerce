@@ -33,6 +33,7 @@ async function authenticateUser(email, password, done) {
 
 async function authenticateAdmin(email, password, done) {
   const user = await User.findOne({ email, isAdmin: true });
+  console.log(user);
   if (!user) {
     return done(null, false, { message: "Not Authorized" });
   }
