@@ -23,6 +23,13 @@ router.use(isAdmin, (req, res, next) => {
   });
 
 router.get("/", adminController.getDashboard);
+/**
+ * User Management
+ */
+
+router.route("/users").get(adminController.getUsersList);
+
+router.route("/users/toggle-block/:id").patch(adminController.toggleBlock)
 
 
 /**
@@ -35,7 +42,6 @@ router
   .route("/category/add-category")
   .get(categoryController.getAddCategory)
   .post(
-    categoryValidation,
     categoryUpload.fields([{ name: "category_image" }]),
     categoryController.addCategory
   );

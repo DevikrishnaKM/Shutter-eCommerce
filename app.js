@@ -37,7 +37,7 @@ app.set('layout','./layouts/userLayout.ejs')
 
 app.use(
   session({
-    secret: uuidv4(),
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),

@@ -101,6 +101,7 @@ $('#category_image').on('change', (e) => {
                         throw new Error(data.error);
                     }
                 } catch (e) {
+                    console.log(e)
                     Swal.fire("Error!", e.message, "error");
                 }
             }
