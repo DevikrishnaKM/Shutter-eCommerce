@@ -30,7 +30,7 @@
   
   <div class="card container py-5 w mb-5 col-lg-6">
     <h3 class="mb-3 card-title text-center">Add New Category</h3>
-    <form class="card-body rounded-3 bg-body-tertiary" id="add-category">
+    <form class="card-body rounded-3 bg-body-tertiary"action="/admin/category/add-category" method="POST" id="add-category" enctype="multipart/form-data">
         <!-- Name input -->
         <div class="err mb-3 text-danger"></div>
         <div class="row mb-3">
@@ -38,8 +38,13 @@
                 <label class="form-label" for="">Category Name</label>
                 <input type="text" class="form-control " name="category_name">
             </div>
-  
+
             <div class="form-group my-3">
+              <label for="category-image" class="form-label">Category Image</label>
+              <input type="file" name="category-image" id="category-image" class="form-control">
+            </div>
+  
+            <!-- <div class="form-group my-3">
                 <div class="d-flex justify-content-between align-items-center">
                     <label class="form-label" for="">Category Image</label>
                     <div class="d-flex align-items-center justify-content-center">
@@ -49,7 +54,7 @@
                 <input id="category_image" type="file" accept=".jpg,.jpeg,.png,.webp,.svg,.avif"
                     class="form-control FilUploader" class="mb-3" required />
                 <input id="cropped_category" type="hidden" name="" value="">
-            </div>
+            </div> -->
   
         </div>
         <!-- Submit button -->
@@ -58,12 +63,12 @@
             <button type="reset" class="btn btn-sm btn-warning px-3">Clear</button>
         </div>
     </form>
-    <div style="display: none;" class="crop-banner card container p-2 shadow" id="category-crp-container">
+    <!-- <div style="display: none;" class="crop-banner card container p-2 shadow" id="category-crp-container">
         <div class="d-flex flex-column">
             <img src="" id="categoryIMG" style="object-fit: cover;" class="img-fluid">
             <button id="cropImageBtn" class="btn btn-primary mt-3">Crop Image</button>
         </div>
-    </div>
+    </div> -->
   
   </div>
   

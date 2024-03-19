@@ -38,8 +38,8 @@
       <thead>
         <tr class="text-center">
           <th scope="col">#</th>
-          <th scope="col">Image</th>
           <th scope="col">Name</th>
+          <th scope="col">Image</th>
           <th scope="col">Status</th>
           <th scope="col" class="text-center">Delete/Edit</th>
         </tr>
@@ -48,10 +48,10 @@
         <% categories.forEach(function(category,index) { %>
         <tr class="align-middle text-center">
           <td><%= index+1 %></td>
-          <td>
-            <img class="mx-auto d-block img-fluid img-thumbnail" style="width: 20%" src="/uploads/category-images/<%= category.image.filename %>" alt="" />
-          </td>
           <td><%= category.name %></td>
+          <td>
+            <img src="/uploads/category-images/crp/<%- category?.image.filename %>" style="width: 7rem;" alt="" class="img-fluid img-thumbnail">
+          </td>
           <% if (category.isActive) { %>
           <td class="text-success">Listed</td>
           <% } else { %>

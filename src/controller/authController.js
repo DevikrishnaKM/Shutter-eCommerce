@@ -498,4 +498,16 @@ module.exports = {
       return res.redirect("/forgot-password");
     }
   },
+
+  adminLogout: async (req, res) => {
+    req.logOut((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        req.flash("success", `Logged Out!!`);
+        res.clearCookie("connect.sid");
+        res.redirect("/admin/login");
+      }
+    });
+  },
 }

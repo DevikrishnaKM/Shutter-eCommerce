@@ -1,5 +1,6 @@
 const adminLayout = "./layouts/adminLayout.ejs";
 const User = require("../model/userSchema");
+const Product = require("../model/productSchema");
 
 module.exports = {
     getDashboard: async (req, res) => {
@@ -7,13 +8,17 @@ module.exports = {
           title: "Shutter - Dashboard",
         };
         const users = await User.find();
+        const products = await Product.find();
 
         const usersCount = await User.find().countDocuments();
+        const productsCount = await Product.find().countDocuments();
 
         res.render("admin/dashboard",{
             locals,
             users,
+            products,
             usersCount,
+            productsCount,
             admin: req.user,
             layout: adminLayout,
         })

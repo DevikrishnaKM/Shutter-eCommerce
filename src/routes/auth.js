@@ -56,5 +56,5 @@ router
   .get(isAdminLoggedOut,authController.getAdminRegister)
   .post(registerValidation,authController.adminRegister);
 
-
+  router.get("/admin/logout", authController.adminLogout);
 module.exports = router;
