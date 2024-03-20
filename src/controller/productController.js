@@ -1,5 +1,6 @@
 const fs = require("fs")
 const path = require("path")
+const sharp = require('sharp');
 const Product = require("../model/productSchema")
 const Category = require("../model/categorySchema")
 
@@ -56,21 +57,28 @@ module.exports = {
             console.log(error.message);
         }
     },
-    addProducts : async (req, res) => {
+    addProducts: async (req, res) => {
         try {
             console.log("working newwww");
-    
             const products = req.body
-            console.log(products);
+            // console.log(products);
             const productExists = await Product.findOne({ productName: products.productName })
             if (!productExists) {
-                const images = []
+
+                const images = [];
+
                 if (req.files && req.files.length > 0) {
                     for (let i = 0; i < req.files.length; i++) {
+                          await sharp("./public/uploads/product-images/" + req.files[i].filename)
+                            .resize(480, 480)
+                            .toFile("./public/uploads/product-images/crp/" +req.files[i].filename);
+
                         images.push(req.files[i].filename);
                     }
                 }
-    
+
+
+
                 const newProduct = new Product({
                     id: Date.now(),
                     productName: products.productName,
@@ -86,13 +94,13 @@ module.exports = {
                 res.redirect("/admin/products")
                 // res.json("success")
             } else {
-    
+
                 res.json("failed");
             }
-    
+
         } catch (error) {
             console.log(error.message);
         }
-    }
-    
+    },
+
 }

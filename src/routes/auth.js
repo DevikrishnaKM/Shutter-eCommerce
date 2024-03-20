@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { validationResult } = require('express-validator');
 
 
 const authController = require('../controller/authController')
@@ -56,5 +57,7 @@ router
   .get(isAdminLoggedOut,authController.getAdminRegister)
   .post(registerValidation,authController.adminRegister);
 
+
+  router.get("/logout", authController.userLogout);
   router.get("/admin/logout", authController.adminLogout);
 module.exports = router;

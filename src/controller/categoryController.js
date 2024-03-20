@@ -48,7 +48,9 @@ module.exports = {
         const processedImage = await sharp("./public/uploads/category-images/" + category_image.filename)
           .resize(480, 480)
           .toFile("./public/uploads/category-images/crp/" + category_image.filename);
+
         console.log(processedImage)
+
         const newCategory = new Category({
           name: name,
           image: {
@@ -76,7 +78,9 @@ module.exports = {
       layout,
     });
   },
+  //edit category
   editCategory: async (req, res) => {
+    console.log(req.body,req.file);
     try {
       const { status, imageName } = req.body;
       let name = req.body.name.toLowerCase();
@@ -85,12 +89,16 @@ module.exports = {
         isActive: status === "true" ? true : false,
       };
 
-      if (req.files) {
+      if (req.file) {
+        const category_image = req.file;
         editCategory.image = {
-          filename: req.files.category_image[0].filename,
-          originalname: req.files.category_image[0].originalname,
-          path: req.files.category_image[0].path,
+          filename: category_image.filename,
+          originalname: category_image.originalname,
+          path: category_image.path,
         };
+        const processedImage = await sharp("./public/uploads/category-images/" + editCategory.image.filename)
+        .resize(480, 480)
+        .toFile("./public/uploads/category-images/crp/" + editCategory.image.filename);
 
         // Deleting old image from the multer
         fs.unlink(`./public/uploads/category-images/${imageName}`, (err) => {
@@ -109,16 +117,58 @@ module.exports = {
       );
 
       if (update_category) {
-        res.json({
-          success: true,
-          category: update_category, // Optionally return the updated category
-        });
+        req.flash('success', "category updated successfully ");
+        res.redirect("/admin/category");
       } else {
-        res.status(404).json({ success: false, message: "Category not found" });
+        req.flash('error', "category updated failed ");
+        res.redirect("/admin/category")
+        
       }
     } catch (error) {
       console.error(error.message);
-      res.status(500).json({ success: false, message: "Server error" });
+      req.flash('error', "category updated failed ");
+      res.redirect("/admin/category")
+    }
+  },
+  //delete category
+  deleteCategory: async (req, res) => {
+    const id = req.query.id;
+    const image = req.query.image;
+
+    try {
+      // Check if the category is used by any product
+      const productsUsingCategory = await Product.find({ category: id });
+
+      if (productsUsingCategory.length > 0) {
+        // If the category is used by any product, send a response indicating that the category is in use
+        return res.status(400).json({
+          success: false,
+          message: "Category is in use by some products",
+        });
+      } else {
+        // If the category is not used by any product, proceed to delete the category
+        // delete banner image from file
+        fs.unlink(`./public/uploads/category-images/${image}`, (err) => {
+          if (err) throw err;
+        });
+
+        // deleting banner image from db
+        const deleteCategory = await Category.findByIdAndDelete({ _id: id });
+        if (deleteCategory) {
+          res.json({
+            success: true,
+          });
+        } else {
+          res
+            .status(404)
+            .json({ success: false, message: "Category not found" });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ success: false, message: "Failed to delete category" });
     }
   },
 }

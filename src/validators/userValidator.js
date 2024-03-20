@@ -1,4 +1,5 @@
-const { checkSchema, validationResult } = require("express-validator");
+
+const { checkSchema} = require("express-validator");
 const User = require("../model/userSchema");
 
 // custom validator to check if username already exists
@@ -193,6 +194,15 @@ module.exports = {
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
         errorMessage:
           "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+      },
+    },
+    custom: {
+      options: (confirmPassword, { req }) => {
+        if (confirmPassword !== req.body.password) {
+          throw new Error("Passwords must be the same");
+        }
+        // Optionally, you can return true if they match
+        return true;
       },
     },
   }),

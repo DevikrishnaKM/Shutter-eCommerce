@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-
 const adminController = require("../controller/adminController");
 const categoryController = require("../controller/categoryController");
 const productController = require("../controller/productController");
@@ -10,7 +9,7 @@ const productController = require("../controller/productController");
 const { categoryValidation } = require("../validators/adminValidator");
 
 const { isAdmin } = require("../middlewares/authMiddleware");
-const { categoryUpload ,productUpload} = require("../middlewares/multer");
+const { categoryUpload, productUpload } = require("../middlewares/multer");
 
 /* Common Midleware for admin routes*/
 router.use(isAdmin, (req, res, next) => {
@@ -29,8 +28,7 @@ router.get("/", adminController.getDashboard);
 
 router.route("/users").get(adminController.getUsersList);
 
-router.route("/users/toggle-block/:id").patch(adminController.toggleBlock)
-
+router.route("/users/toggle-block/:id").patch(adminController.toggleBlock);
 
 /**
  * Category Management
@@ -55,7 +53,11 @@ router
     categoryUpload.single("category-image"),
     categoryController.editCategory
   );
- 
+
+router
+  .route("/category/delete-category/")
+  .get(categoryController.deleteCategory);
+
 /**
  * Product Management
  */
@@ -63,7 +65,6 @@ router.route("/products").get(productController.getAllProducts);
 router
   .route("/products/add-product")
   .get(productController.getProductAddPage)
-  .post(productUpload.array("images",5), productController.addProducts);
-
+  .post(productUpload.array("images", 5), productController.addProducts);
 
 module.exports = router;

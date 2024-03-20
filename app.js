@@ -8,6 +8,7 @@ const expressLayouts=require('express-ejs-layouts');
 const session = require("express-session");
 const flash = require("connect-flash");
 const MongoStore = require("connect-mongo");
+const nocache = require('nocache');
 const {v4:uuidv4}=require('uuid');
 
 const connectDB =require('./src/config/db');
@@ -47,6 +48,7 @@ app.use(
   })
 );
 
+app.use(nocache());
 app.use(flash());
 
 // passport session
@@ -54,7 +56,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', authRouter);
-app.use('/users/', usersRouter);
+app.use('/user/', usersRouter);
 app.use('/',shopRouter);
 app.use("/admin", adminRouter);
 

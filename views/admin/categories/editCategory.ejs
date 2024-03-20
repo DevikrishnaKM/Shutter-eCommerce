@@ -59,7 +59,7 @@
             <img id="category_prev" class="border my-1 rounded img-fluid img-thumbnail" src="/uploads/category-images/<%- category.image.filename %>" alt="">
           </div>
         </div>
-        <input id="category" type="file" accept=".jpg,.jpeg,.png,.webp,.svg" class="form-control " class="mb-3" />
+        <input id="category" name="category-image" type="file" accept=".jpg,.jpeg,.png,.webp,.svg" class="form-control " class="mb-3" />
         <input id="cropped_category" type="hidden" name="" value="">
         <input id="" type="hidden" name="imageName" value="<%= category.image.filename %>">
         <input id="" type="hidden" name="category_id" value="<%= category._id %>">

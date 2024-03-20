@@ -1,4 +1,4 @@
-const { validationResult } = require("express-validator");
+const {validationResult } = require("express-validator");
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 
@@ -439,6 +439,7 @@ module.exports = {
   resetPass: async (req, res) => {
     console.log(req.body);
     const errors = validationResult(req);
+    console.log(errors);
     // console.log(errors);
     if (!errors.isEmpty()) {
       req.flash(
@@ -499,6 +500,21 @@ module.exports = {
     }
   },
 
+  
+  /**
+   * User Logout
+   */
+  userLogout: async (req, res) => {
+    req.logOut((err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        req.flash("success", `Logged Out!!`);
+        res.clearCookie("connect.sid");
+        res.redirect("/login");
+      }
+    });
+  },
   adminLogout: async (req, res) => {
     req.logOut((err) => {
       if (err) {

@@ -1,9 +1,23 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const User = require("../model/userSchema");
 
+
+const { isLoggedIn } = require("../middlewares/authMiddleware");
+
+const userController = require("../controller/userController");
+
+
+/**
+ * User Profile
+ */
+
+router
+  .route("/profile")
+  .get(userController.getProfile);
+
+  
 module.exports = router;
+
+
