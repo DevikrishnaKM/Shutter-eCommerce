@@ -20,6 +20,7 @@ const {
 
 /* GET users listing. */
 router.get("/", shopController.getHome);
-
+router.get("/shop", shopController.getProductList);
+router.get("/shop/product/:id", shopController.getProduct);
 
 module.exports = router;
