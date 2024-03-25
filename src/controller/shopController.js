@@ -54,37 +54,15 @@ module.exports = {
     console.log(productId);
 
     try {
-       // Aggregation pipeline to find the product and populate related data
-       const pipeline = [
-        { $match: { _id: new  mongoose.Types.ObjectId(productId) } }, //Use ObjectId for matching
-        // {
-        //   $lookup: {
-        //     from: "categories",// Assuming 'categories' is the correct collection name for categories
-        //     localField: "category",
-        //     foreignField: "_id",
-        //     as: "category",
-        //   },
-        // },
-        // { $unwind: "$category" }, // Assuming there is only one category per product
-        {
-          $project: {
-            productName: 1,
-            category: 1, // Use the populated 'category' object
-            description: 1,
-            regularPrice: 1,
-            isBlocked: 1,
-            images: 1,
-          },
-        },
-       ];
-       const productData = await Product.aggregate(pipeline);
+      
+       const productData = await Product.findById(productId);
        console.log(productData);
        
       // Check if product data was found
       if (!productData || productData.length === 0) {
         return res.status(404).json({ message: "Product not found" });
       }
-      res.render('/shop/productDetail',{
+      res.render('shop/productDetail',{
         product: productData,
       })
     } catch (error) {

@@ -6,15 +6,15 @@ const {
     isLoggedIn,
   } = require("../middlewares/authMiddleware");
   
-//   const userController = require("../controller/userController");
+ const userController = require("../controller/userController");
 
 
   router.use((req, res, next) => {
     if (req.isAuthenticated()) {
       res.locals.user = req.user;
     }
-    // res.locals.success = req.flash("success");
-    // res.locals.error = req.flash("error");
+     res.locals.success = req.flash("success");
+     res.locals.error = req.flash("error");
     next();
   });
 

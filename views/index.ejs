@@ -101,7 +101,7 @@
                 }'>
         <% categories.forEach(category => { %>
          
-            <a href="#" class="brand card">
+            <a href="/shop?category/<%- category._id %>" class="brand card">
               <img src="uploads/category-images/crp/<%- category.image.filename %>" alt="<%- category.name %>">
               <p class="lead text-capitalize"><%- category.name %></p>
             </a>
@@ -153,13 +153,13 @@
                        
                         <div class="product product-7 text-center">
                             <figure class="product-media">
-                                <a href="product.html">
+                                <a href="/shop/product/<%- product._id %>">
                                     <img src="uploads/product-images/crp/<%- product.images[0] %>" alt="Product image" class="product-image">
                                 </a>
   
                                 <div class="product-action-vertical">
                                     <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                    <a href="/shop/product/:id" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
                                 </div><!-- End .product-action-vertical -->
   
                                 <div class="product-action">

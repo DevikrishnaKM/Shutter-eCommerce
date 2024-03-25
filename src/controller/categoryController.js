@@ -4,6 +4,9 @@ const sharp = require("sharp");
 
 const layout = "./layouts/adminLayout.ejs";
 const Category = require("../model/categorySchema");
+const Product = require("../model/productSchema");
+
+
 // Function to ensure the directory exists
 function ensureDirectoryExists(filePath) {
   const dir = path.dirname(filePath);
@@ -148,7 +151,7 @@ module.exports = {
       } else {
         // If the category is not used by any product, proceed to delete the category
         // delete banner image from file
-        fs.unlink(`./public/uploads/category-images/${image}`, (err) => {
+        fs.unlink(`./public/uploads/category-images/crp/${image}`, (err) => {
           if (err) throw err;
         });
 
