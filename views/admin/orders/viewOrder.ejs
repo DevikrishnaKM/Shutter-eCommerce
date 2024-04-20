@@ -1,0 +1,95 @@
+<section class="container-fluid mt-5">
+
+    <div class="header d-flex justify-content-between">
+        <h3 class="h3 text-second fw-bold mb-3 text-capitalize " style="margin-right: 20%;margin-left: 40%;">Order Details </h3>
+    </div>
+  
+  
+    <form action="/admin/orders/manage-order/changeStatus/<%- orderDetails._id %>" method="POST" class="card py-3 my-3 text-capitalize" style="margin-left: 20%;margin-right: 20%;margin-top: 20%;margin-bottom: 25%;">
+      <div class="card-header d-flex flex-column">
+        <div class="row">
+          <div class="col d-flex flex-column">
+            <span class="h5 fw-bold" >Customer: <span class="text-muted"><%- orderDetails.user.username %></span></span>
+            <span class="h5 fw-bold" >Order placed at: <span class="text-muted"><%- orderDetails.createdAt.toLocaleDateString() %></span></span>
+          </div>
+          <div class="col">
+            <span class="h5 fw-bold">
+              Address: <span class="text-muted"><%- orderDetails.address.name.toLowerCase() + ', ' + orderDetails.address.house_name + ', ' + orderDetails.address.town + ', ' + orderDetails.address.state + ', PIN: ' + orderDetails.address.zipcode + ', PH:' + orderDetails.address.phone %></span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="row g-0 mt-3">
+        <div class="col-md-4 order-sm-0 order-lg-0">
+          <img src="/uploads/product-images/crp/<%- orderDetails.productDetails.images[0] %>" class="img-fluid img-thumbnail rounded-start mx-2 p-3" alt="<%- orderDetails.productDetails.product_name %>">
+        </div>
+        <div class="col-md-8 order-sm-1 order-lg-1 mt-0">
+          <div class="card-body text-capitalize m-2 mt-0 text-capitalize ">
+  
+            <fieldset class="d-flex flex-column card p-3 mt-0">
+              <legend class="card-title h3 text-decoration-underline">Order Product</legend>
+              <h5 class="card-text"><%- orderDetails.productDetails.productName %></h5>
+            </fieldset>
+            <fieldset class="card p-3 my-3">
+              <legend class="card-title h3 text-decoration-underline">Payment Detail</legend>
+              <p class="card-text h5 mb-0 fw-bold"><span>Price: <span class="text-muted"><%- orderDetails.items.price %></span></span></p>
+              <p class="card-text h5 mb-0 fw-bold"><span>Quantity: <span class="text-muted"><%- orderDetails.items.quantity %></span></span></p>
+              
+              <p class="card-text h5 fw-bold">Payment Status: <small class="text-body-secondary text-uppercase"><%- orderDetails.paymentStatus %></small></p>
+            </fieldset>
+            <fieldset class="card p-3 my-3">
+              <input type="hidden" name="productId" value="<%- orderDetails.items.product_id %>">
+              <input type="hidden" name="variant" value="<%- orderDetails.items.variant %>">
+              <legend class="card-title h3 text-decoration-underline">Update Status: </legend>
+              <div class="row">
+                <div class="col-md-6">
+                  <select name="status" id="item-status" class="form-select <% if (orderDetails.items.status === 'Delivered') { %>
+                    bg-success text-white
+                  <% } %>">
+                    <% if (orderDetails.items.status === 'Pending') { %>
+                      <option value="Confirmed">Confirmed</option>
+                      <% } %>
+                    <% if (orderDetails.items.status === 'Confirmed') { %>
+                      <option value="Shipped">Shipped</option>
+                      <% } %>
+                      <% if (orderDetails.items.status === 'Shipped') { %>
+                      <option value="Out for Delivery">Out for Delivery</option>
+                      <% } %>
+                      <% if (orderDetails.items.status === 'Out for Delivery') { %>
+                      <option value="Delivered">Delivered</option>
+                      <% } %>
+                      <% if (orderDetails.items.status === 'Delivered') { %>
+                      <option value="Delivered">Delivered</option>
+                      <% } %>
+                      <% if (orderDetails.items.status === 'In-Return') { %>
+                      <option value="Returned">Returned</option>
+                      <% } %>
+                      <% if (orderDetails.items.status === 'Returned') { %>
+                      <option value="Returned">Returned</option>
+                      <% } %>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <% if (orderDetails.items.status === 'Cancelled' || orderDetails.items.status === 'Pending' ) { %>
+  
+                    <a href="/admin/orders"><input type="none" value="Back To Orders" class="form-control btn"readonly></a>
+  
+                  <% } else { %>
+                    <button type="submit" class="btn <% if (orderDetails.items.status === 'Delivered') { %>
+                      btn-dark
+                      <% } else { %>
+                        btn-dark
+                     <% } %>" <% if (orderDetails.items.status === 'Delivered') { %>
+                     disabled
+                    <% } %> >Change Status</button>
+                  <% } %>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+  
+    </form>
+  </section>
+  

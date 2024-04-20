@@ -1,7 +1,7 @@
 <main class="main">
-  <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+  <div class="page-header text-center" style="background-image: url('/assets/images/banners/prof.jpg')">
     <div class="container">
-      <h1 class="page-title">Products<span>Shop</span></h1>
+      <h1 class="page-title">My Products<span class="text-dark">shop</span></h1>
     </div><!-- End .container -->
   </div><!-- End .page-header -->
   <nav aria-label="breadcrumb" class="breadcrumb-nav mb-2">
@@ -28,10 +28,12 @@
           </div><!-- End .toolbox -->
 
 
-          
+
           <div class="products mb-3">
             <div class="row justify-content-center">
-                <% products.forEach(product => { %>
+              
+              <% products.forEach(product => { %>
+               
               <div class="col-6 col-md-4 col-lg-4">
                 <div class="product product-7 text-center">
                   <figure class="product-media">
@@ -40,13 +42,15 @@
                     </a>
 
                     <div class="product-action-vertical">
-                      <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                      <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                      <button id="wishlist-<%- element._id %>" class="btn btn-outline-danger btn-product-right d-none d-sm-inline-block justify-content-center" onclick="addToWishlist('<%- element._id %>')">
+                        <i class="bi bi-heart fs-5"></i>
+                      </button>
+                      <a href="/shop/product/<%- product._id %>" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
                       <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
                     </div><!-- End .product-action-vertical -->
 
                     <div class="product-action">
-                      <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                      <a href="" class="btn-product btn-cart"><span>add to cart</span></a>
                     </div><!-- End .product-action -->
                   </figure><!-- End .product-media -->
 
@@ -67,11 +71,12 @@
                   </div><!-- End .product-body -->
                 </div><!-- End .product -->
               </div><!-- End .col-sm-6 col-lg-4 -->
+              
               <% }) %>
 
             </div><!-- End .row -->
           </div><!-- End .products -->
-         
+
 
 
 
@@ -96,59 +101,74 @@
         </div><!-- End .col-lg-9 -->
 
         <aside class="col-lg-3 order-lg-first">
-          <div class="sidebar sidebar-shop">
-            <div class="widget widget-clean">
-              <label>Filters:</label>
-              <a href="#" class="sidebar-filter-clear">Clean All</a>
-            </div><!-- End .widget widget-clean -->
-
-            <div class="widget widget-collapsible">
-              <h3 class="widget-title">
-                <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
-                  Category
-                </a>
-              </h3><!-- End .widget-title -->
-
-              <div class="collapse show" id="widget-1">
-                <div class="widget-body">
-                  <div class="filter-items filter-items-count">
-                    <% categories.forEach(category => { %>
-                    <div class="filter-item">
-                      <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="cat-1">
-                        <label class="custom-control-label" for="cat-1"><%- category.name %></label>
-                      </div><!-- End .custom-checkbox -->
-                      <span class="item-count">3</span>
-                    </div><!-- End .filter-item -->
-                    <% }) %>
-
-                  </div><!-- End .filter-items -->
-                </div><!-- End .widget-body -->
-              </div><!-- End .collapse -->
-            </div><!-- End .widget -->
-
-            <div class="widget widget-collapsible">
-              <h3 class="widget-title">
-                <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true" aria-controls="widget-5">
-                  Price
-                </a>
-              </h3><!-- End .widget-title -->
-
-              <div class="collapse show" id="widget-5">
-                <div class="widget-body">
-                  <div class="filter-price">
-                    <div class="filter-price-text">
-                      Price Range:
-                      <span id="filter-price-range"></span>
-                    </div><!-- End .filter-price-text -->
-
-                    <div id="price-slider"></div><!-- End #price-slider -->
-                  </div><!-- End .filter-price -->
-                </div><!-- End .widget-body -->
-              </div><!-- End .collapse -->
-            </div><!-- End .widget -->
-          </div><!-- End .sidebar sidebar-shop -->
-        </aside><!-- End .col-lg-3 -->
+            <div class="sidebar sidebar-shop">
+              <div class="widget widget-clean">
+                <label>Filters:</label>
+                <a href="#" class="sidebar-filter-clear ">Clean All</a>
+              </div><!-- End .widget widget-clean -->
+  
+              <div class="widget widget-collapsible">
+                <h3 class="widget-title">
+                  <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
+                    Category
+                  </a>
+                </h3><!-- End .widget-title -->
+  
+                <div class="collapse show" id="widget-1">
+                  <div class="widget-body">
+                    <div class="mt-4 mt-lg-0" id="categories">
+                        <% if (typeof categories !== 'undefined' && categories?.length > 0 ) { %>
+                          <% categories?.forEach((element,i) => { %>
+                          <div class="mb-1">
+                            <div class="form-check">
+                              <input class="form-check-input" id="category-<%- i %>" type="radio" name="category" value="<%- element._id %>" <%- element._id.toString() === categoryID ? 'checked' : '' %> />
+                              <label class="form-check-label text-capitalize" for="category-<%- i %>"><%- element.name %></label>
+                            </div>
+                          </div>
+                          <% }) %>
+                        <% } %>
+                      </div>
+                  </div><!-- End .widget-body -->
+                </div><!-- End .collapse -->
+              </div><!-- End .widget -->
+  
+              <div class="widget widget-collapsible">
+                <h3 class="widget-title">
+                  <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true" aria-controls="widget-5">
+                    Price
+                  </a>
+                </h3><!-- End .widget-title -->
+  
+                <div class="collapse show" id="widget-5">
+                  <div class="widget-body">
+                    <div class="filter-price">
+                      <div class="filter-price-text">
+                        Price Range:
+                        <span id="filter-price-range"></span>
+                      </div><!-- End .filter-price-text -->
+  
+                      <div id="price-slider">
+                        <div class="mb-1">
+                            <div class="form-check">
+                              <input class="form-check-input" id="sortPrice" type="radio" name="sortPrice" value="lowPrice" <% if (sortBy==='lowPrice' ) { %> checked <% } %> />
+                              <label class="form-check-label text-capitalize" for="sortPrice">Price Low to High</label>
+                            </div>
+                          </div>
+                
+                          <div class="mb-1">
+                            <div class="form-check">
+                              <input class="form-check-input" id="sortPrice" type="radio" name="sortPrice" value="highPrice" <% if (sortBy==='highPrice' ) { %> checked <% } %> />
+                              <label class="form-check-label text-capitalize" for="sortPrice">Price High to Low</label>
+                            </div>
+                          </div>
+                
+                      </div><!-- End #price-slider -->
+                    </div><!-- End .filter-price -->
+                  </div><!-- End .widget-body -->
+                </div><!-- End .collapse -->
+              </div><!-- End .widget -->
+            </div><!-- End .sidebar sidebar-shop -->
+          </aside><!-- End .col-lg-3 -->
       </div><!-- End .row -->
     </div><!-- End .container -->
   </div><!-- End .page-content -->

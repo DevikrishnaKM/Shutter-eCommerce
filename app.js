@@ -10,13 +10,19 @@ const flash = require("connect-flash");
 const MongoStore = require("connect-mongo");
 const nocache = require('nocache');
 const {v4:uuidv4}=require('uuid');
+const methodOverride = require("method-override");
+
 
 const connectDB =require('./src/config/db');
 const passport = require("./src/config/passport-config");
 
+const { checkBlockedUser } = require("./src/middlewares/authMiddleware");
+
+
 const authRouter = require("./src/routes/auth");
 const adminRouter = require("./src/routes/admin");
-const shopRouter=require('./src/routes/shop')
+const shopRouter=require('./src/routes/shop');
+const checkoutRouter = require("./src/routes/checkout");
 const usersRouter = require('./src/routes/users');
 
 
@@ -31,6 +37,7 @@ app.set('view engine', 'ejs');
 app.use(expressLayouts)
 app.use(logger('dev'));
 app.use(express.json());
+app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -55,15 +62,17 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 app.use('/', authRouter);
 app.use('/user/', usersRouter);
 app.use('/',shopRouter);
+app.use("/checkout", checkoutRouter);
 app.use("/admin", adminRouter);
 
 
 // Custom middleware to expose flash messages to views
-app.use((req, res, next) => {
-  if (req.user) {
+app.use(checkBlockedUser,(req, res, next) => {
+  if (req.user && req.isAuthenticated()) {
     res.locals.user = req.user;
   }
   res.locals.success = req.flash("success");

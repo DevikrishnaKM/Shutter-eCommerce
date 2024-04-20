@@ -5,6 +5,8 @@ const adminController = require("../controller/adminController");
 const categoryController = require("../controller/categoryController");
 const productController = require("../controller/productController");
 // const bannerController = require("../controller/bannerController");
+const orderController = require("../controller/orderController");
+const couponController = require("../controller/couponController");
 
 const { categoryValidation } = require("../validators/adminValidator");
 
@@ -16,8 +18,8 @@ router.use(isAdmin, (req, res, next) => {
   if (req.user && req.user.isAdmin) {
     res.locals.admin = req.user;
   }
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
+   res.locals.success = req.flash("success");
+   res.locals.error = req.flash("error");
   next();
 });
 
@@ -66,5 +68,34 @@ router
   .route("/products/add-product")
   .get(productController.getProductAddPage)
   .post(productUpload.array("images", 5), productController.addProducts);
+
+router.get("/products/editProduct/:id", productController.getEditProduct);
+router.post("/products/editProduct/:id", productUpload.array("images", 5), productController.editProduct)
+
+router.get("/blockProduct/:id",productController.blockProduct)
+router.get("/unBlockProduct/:id",productController.unBlockProduct)
+/**
+ * order management
+ */
+router.route("/orders").get(orderController.getOrders);
+router.route("/orders/manage-order/:id").get(orderController.getOrderDetails);
+router
+  .route("/orders/manage-order/changeStatus/:id")
+  .post(orderController.changeOrderStatus);
+
+/***
+ * Coupon Management
+ */
+
+ router.get('/coupons', couponController.getCoupons)
+// router.post('/coupons/add-coupon', couponController.addCoupon)
+
+/**
+ * Sales Report
+ */
+
+// router.get('/sales-report', reportsController.getSalesReport)
+// router.get('/sales-report/excel', reportsController.salesReportExcel)
+// router.get('/sales-report/pdf-download', reportsController.getSalesReportPdf)
 
 module.exports = router;

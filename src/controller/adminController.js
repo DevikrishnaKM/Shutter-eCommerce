@@ -53,11 +53,12 @@ module.exports = {
       },
       toggleBlock: async (req, res) => {
         try {
-          const user = await User.findById(req.params.id);
+          let user = await User.findById(req.params.id);
           if (!user) {
             return res.status(404).json({ message: 'User not found' });
           }
           user.isBlocked = !user.isBlocked;
+          console.log(user);
           await user.save();
           res.status(200).json({ message: user.isBlocked ? 'User blocked successfully' : 'User unblocked successfully' });
         } catch (error) {

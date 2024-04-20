@@ -99,13 +99,14 @@
                         }
                     }
                 }'>
-        <% categories.forEach(category => { %>
-         
-            <a href="/shop?category/<%- category._id %>" class="brand card">
-              <img src="uploads/category-images/crp/<%- category.image.filename %>" alt="<%- category.name %>">
-              <p class="lead text-capitalize"><%- category.name %></p>
-            </a>
-        <% }) %>        
+                <% categories.forEach(category => { %>
+                   
+                      <a href="/shop?category=<%- category._id %>" class="brand card">
+                        <img src="uploads/category-images/crp/<%- category.image.filename %>" alt="<%- category.name %>">
+                        <p class="lead text-capitalize"><%- category.name %></p>
+                      </a>
+                  <% }) %>        
+                
 
         
       </div><!-- End .owl-carousel -->

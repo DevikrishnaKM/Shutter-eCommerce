@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Category = require("../model/categorySchema");
 const Product = require("../model/productSchema");
+const Address = require("../model/addressSchema");
+const Order = require("../model/orderSchema");
 const User = require("../model/userSchema");
 
 module.exports = {
@@ -68,5 +70,69 @@ module.exports = {
     } catch (error) {
       console.log(error)
     }
-  }
+  },
+  search: async (req,res)=>{
+    try {
+      console.log(req.query);
+      let search="";
+
+      if(req.query.search){
+        search = req.query.search.trim();
+      }
+      let page = 1;
+
+      if(req.query.page){
+        page = req.query.page;
+      }
+      const categoryID = req.query.category;
+      // const categoryID = new mongoose.Types.ObjectId(req.query.category);
+
+      const limit = 9;
+
+      const sortBy = req.query.sortBy;
+
+      let sortQuery = {};
+      if (sortBy) {
+        if (sortBy === "lowPrice") {
+          sortQuery = { regularPrice: 1 };
+        } else if (sortBy === "highPrice") {
+          sortQuery = { regularPrice: -1 };
+        }
+      }
+      let filterQuery = {
+        isBlocked: false,
+      };
+
+      if (search && search!=="") {
+        filterQuery.productName = { $regex: search, $options: "i" };
+      }
+      if (categoryID && typeof categoryID !== undefined) {
+        filterQuery.category = { $regex: categoryID, $options: "i"};
+      }
+      const products = await Product.find(filterQuery)
+      .sort(sortQuery)
+      .skip((page - 1) * limit)
+      .limit(limit * 1)
+      .exec();
+      const count = await Product.find(filterQuery).countDocuments();
+
+      const categories = await Category.find({ isActive: true });
+      return res.render("shop/search.ejs", {
+        sortBy,
+        categoryID,
+        products,
+        categories,
+        count,
+        pages: Math.ceil(count / limit),
+        current: page,
+        previous: page - 1,
+        nextPage: Number(page) + 1,
+        limit,
+        search,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({success:false,message:error.message});
+    }
+  },
 };
