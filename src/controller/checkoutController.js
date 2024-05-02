@@ -11,7 +11,6 @@ const Payment = require("../model/paymentSchema");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 
-
 var instance = new Razorpay({
   key_id: process.env.RAZ_KEY_ID,
   key_secret: process.env.RAZ_KEY_SECRET,
@@ -19,11 +18,11 @@ var instance = new Razorpay({
 
 const checkProductExistence = async (item) => {
   const product = await Product.findById(item.product_id._id);
-  console.log(product)
+  console.log(product);
   if (!product || product.isBlocked) {
     throw new Error(`${product ? product.productName : "not available"}`);
   }
-  
+
   return product;
 };
 
@@ -37,14 +36,13 @@ const checkStockAvailability = async (item) => {
   return product;
 };
 const createRazorpayOrder = async (order_id, total) => {
-  
   let options = {
     amount: total * 100, // amount in the smallest currency unit
     currency: "INR",
     receipt: order_id.toString(),
   };
   const order = await instance.orders.create(options);
-  
+
   return order;
 };
 
@@ -129,29 +127,29 @@ module.exports = {
       totalPrice += prod.itemTotal;
     }
 
-     // Apply coupon discount if applicable
-     let couponDiscount = 0;
-     if (cart.coupon) {
-       const coupon = await Coupon.findById(cart.coupon);
-       if (
-         coupon &&
-         coupon.isActive &&
-         new Date() <= coupon.expirationDate &&
-         totalPrice >= coupon.minPurchaseAmount
-       ) {
-         couponDiscount = totalPrice * (coupon.rateOfDiscount / 100);
-         totalPrice -= couponDiscount;
-       } else {
-         // If the total is less than the minimum purchase amount, remove the coupon
-         cart.coupon = undefined;
-         cart.couponDiscount = 0;
-         await cart.save();
-       }
-     }
+    // Apply coupon discount if applicable
+    let couponDiscount = 0;
+    if (cart.coupon) {
+      const coupon = await Coupon.findById(cart.coupon);
+      if (
+        coupon &&
+        coupon.isActive &&
+        new Date() <= coupon.expirationDate &&
+        totalPrice >= coupon.minPurchaseAmount
+      ) {
+        couponDiscount = totalPrice * (coupon.rateOfDiscount / 100);
+        totalPrice -= couponDiscount;
+      } else {
+        // If the total is less than the minimum purchase amount, remove the coupon
+        cart.coupon = undefined;
+        cart.couponDiscount = 0;
+        await cart.save();
+      }
+    }
 
-     const coupons = await Coupon.find({
+    const coupons = await Coupon.find({
       isActive: true,
-      
+
       expirationDate: { $gte: Date.now() },
       // usedBy: [{ $: req.user.id }],
     });
@@ -170,7 +168,7 @@ module.exports = {
       totalPrice,
     });
   },
- 
+
   /**
    * add address
    */
@@ -267,13 +265,13 @@ module.exports = {
           : "Pending";
 
       console.log(cart.items);
-       
+
       let order;
 
-      if(cart.coupon){
-          order=new Order({
+      if (cart.coupon) {
+        order = new Order({
           customer_id: user._id,
-          items : cart.items,
+          items: cart.items,
           totalPrice: cart.totalPrice,
           coupon: cart.coupon,
           couponDiscount: cart.couponDiscount,
@@ -281,14 +279,12 @@ module.exports = {
           paymentMethod,
           status,
           shippingAddress: address,
-         
-        })
+        });
         order.items.forEach((item) => {
           item.status = status;
         });
-      }else{
-
-           order = new Order({
+      } else {
+        order = new Order({
           customer_id: user._id,
           items: cart.items,
           totalPrice: cart.totalPrice,
@@ -297,7 +293,7 @@ module.exports = {
           status,
           shippingAddress: address,
         });
-  
+
         order.items.forEach((item) => {
           item.status = status;
         });
@@ -330,7 +326,6 @@ module.exports = {
           }
 
           if (orderPlaced) {
-            
             for (const item of cart.items) {
               const product = await Product.findById(item.product_id).catch(
                 (error) => {
@@ -368,7 +363,7 @@ module.exports = {
 
           break;
 
-          case "Online":
+        case "Online":
           const createOrder = await Order.create(order);
 
           let total = parseInt(cart.payable);
@@ -406,20 +401,20 @@ module.exports = {
           break;
 
         case "Wallet":
-
           const orderCreate = await Order.create(order);
 
-          if(orderCreate){
+          if (orderCreate) {
             let wallet = await Wallet.findOne({ userId: req.user.id });
-            
-            wallet.balance = parseInt(wallet.balance) - parseInt(orderCreate.payable);
-            
+
+            wallet.balance =
+              parseInt(wallet.balance) - parseInt(orderCreate.payable);
+
             wallet.transactions.push({
               date: new Date(),
               amount: parseInt(orderCreate.payable),
               message: "Order placed successfully",
               type: "Debit",
-            })
+            });
 
             await wallet.save();
 
@@ -465,7 +460,6 @@ module.exports = {
               );
             }
 
-
             return res.status(200).json({
               success: true,
               message: "Order has been placed successfully.",
@@ -473,11 +467,10 @@ module.exports = {
           }
 
           break;
-          
+
         default:
           return res.status(400).json({ error: "Invalid payment method" });
       }
-
     } catch (error) {
       console.error(error);
       res
@@ -486,20 +479,19 @@ module.exports = {
     }
   },
   verifyPayment: async (req, res) => {
-    console.log(req.body)
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body.response;
+    console.log(req.body);
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body.response;
     const secret = process.env.RAZ_KEY_SECRET;
-    
+
     try {
       const hmac = crypto
-      .createHmac("sha256", secret)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
+        .createHmac("sha256", secret)
+        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+        .digest("hex");
 
       const isSignatureValid = hmac === razorpay_signature;
-      console.log(hmac,razorpay_signature,isSignatureValid)
-
-      
+      console.log(hmac, razorpay_signature, isSignatureValid);
 
       if (isSignatureValid) {
         let customer_id = req.user.id;
@@ -552,7 +544,14 @@ module.exports = {
 
         const updateOrder = await Order.updateOne(
           { _id: order_id },
-          { $set: { "items.$[].status": "Confirmed", "items.$[].paymentStatus": "Paid" , status: "Confirmed", paymentStatus: "Paid" } }
+          {
+            $set: {
+              "items.$[].status": "Confirmed",
+              "items.$[].paymentStatus": "Paid",
+              status: "Confirmed",
+              paymentStatus: "Paid",
+            },
+          }
         );
 
         let couponId = await Order.findOne({ _id: order_id }).populate(
@@ -574,7 +573,7 @@ module.exports = {
             );
           }
         }
-        console.log(updateCoupon)
+        console.log(updateCoupon);
         req.session.order = {
           status: true,
         };
@@ -582,7 +581,6 @@ module.exports = {
           success: true,
         });
       } else {
-       
       }
     } catch (error) {
       console.log(error);
