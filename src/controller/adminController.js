@@ -1,6 +1,7 @@
 const adminLayout = "./layouts/adminLayout.ejs";
 const User = require("../model/userSchema");
 const Product = require("../model/productSchema");
+const Orders = require("../model/orderSchema");
 
 module.exports = {
     getDashboard: async (req, res) => {
@@ -13,11 +14,29 @@ module.exports = {
         const usersCount = await User.find().countDocuments();
         const productsCount = await Product.find().countDocuments();
 
+        const confirmedOrders = await Orders.aggregate([
+          { $match: { status: "Confirmed" } },
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+              totalRevenue: { $sum: "$totalPrice" },
+            },
+          },
+        ]).exec();
+    
+        console.log(confirmedOrders);
+    
+        const ordersCount = await Orders.find({
+          status: "Confirmed",
+        }).countDocuments();
+
         res.render("admin/dashboard",{
             locals,
             users,
             products,
             usersCount,
+            ordersCount,
             productsCount,
             admin: req.user,
             layout: adminLayout,

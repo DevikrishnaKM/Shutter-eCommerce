@@ -65,6 +65,14 @@ const orderSchema = new Schema(
       required: true,
       min: 0,
     },
+    coupon: {
+      type: ObjectId,
+      ref: "Coupon",
+    },
+    couponDiscount: {
+      type: Number,
+      default: 0,
+    },
     payable: {
       type: Number,
     },

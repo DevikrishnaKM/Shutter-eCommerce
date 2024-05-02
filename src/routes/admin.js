@@ -7,6 +7,9 @@ const productController = require("../controller/productController");
 // const bannerController = require("../controller/bannerController");
 const orderController = require("../controller/orderController");
 const couponController = require("../controller/couponController");
+const returnController = require("../controller/returnController");
+const offerController = require("../controller/offerController");
+const reportsController = require("../controller/reportsController");
 
 const { categoryValidation } = require("../validators/adminValidator");
 
@@ -74,6 +77,7 @@ router.post("/products/editProduct/:id", productUpload.array("images", 5), produ
 
 router.get("/blockProduct/:id",productController.blockProduct)
 router.get("/unBlockProduct/:id",productController.unBlockProduct)
+// router.get("/stocks", productController.getStocks);
 /**
  * order management
  */
@@ -88,14 +92,52 @@ router
  */
 
  router.get('/coupons', couponController.getCoupons)
-// router.post('/coupons/add-coupon', couponController.addCoupon)
+ router.post('/coupons/add-coupon', couponController.addCoupon);
+ router
+  .route("/coupons/edit/:id")
+  .get(couponController.getCoupon)
+  .put(couponController.editCoupon);
+
+router.patch("/coupon/toggleStatus/:id", couponController.toggleStatus)
+
+/**
+ * Offer Management
+ *  - Category Offer
+ *  - Product Offer
+ *  - Refferals
+ */
+
+// Category Offer
+router.get('/category-offers', offerController.getCategoryOffers)
+ router.get('/category-details/:id', categoryController.getCategoryDetails)
+ router.patch('/category-offer/:id', offerController.addCatOffer)
+ router.patch('/toggle-active-category/:id', offerController.toggleActiveCatOffer)
+
+// Product Offer
+router.get('/product-offers', offerController.getProductOffers)
+ router.get('/product-details/:id', productController.getProdDetails)
+ router.patch('/product-offer/:id', offerController.addProdOffer)
+ router.patch('/toggle-active-product/:id', offerController.toggleActiveProdOffer)
+
+/**
+ * Order Return
+ */
+
+router.get('/returns', returnController.getReturnRequests)
+
+router.post('/returns/approve-return', returnController.approveReturn)
+
+router.post('/returns/reject-return', returnController.declineReturn)
+
+
+
 
 /**
  * Sales Report
  */
 
-// router.get('/sales-report', reportsController.getSalesReport)
-// router.get('/sales-report/excel', reportsController.salesReportExcel)
-// router.get('/sales-report/pdf-download', reportsController.getSalesReportPdf)
+ router.get('/sales-report', reportsController.getSalesReport)
+ router.get('/sales-report/excel', reportsController.salesReportExcel)
+ router.get('/sales-report/pdf-download', reportsController.getSalesReportPdf)
 
 module.exports = router;

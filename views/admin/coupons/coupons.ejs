@@ -66,11 +66,11 @@
             <td class="text-center"><%- item.rateOfDiscount %>%</td>
             <td class="text-center"><%- item.maximumDiscount %></td>
             <td class="text-center"><%- item?.usedBy?.length %></td>
-            <td><span class="<%- item.isActive ? 'badge bg-success' : 'badge bg-danger' %>"><%- item.isActive ? 'Active' : 'Deactive' %></span></td>
+            <td><span class="<%- item.isActive ? 'badge bg-primary' : 'badge bg-danger' %>"><%- item.isActive ? 'Active' : 'Deactive' %></span></td>
             <td><%- item?.expirationDate?.toLocaleDateString() %></td>
             <td>
               <div class="btn-group">
-                <button data-coupon-id="<%- item._id %>" data-bs-target="#editCouponModal" data-bs-toggle="modal" type="button" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i>Edit</button>
+                <button data-coupon-id="<%- item._id %>" data-bs-target="#editCouponModal" data-bs-toggle="modal" type="button" class="btn btn-sm btn-dark"><i class="bi bi-pencil"></i>Edit</button>
                 <% if (item.isActive) { %>
                 <button id="toggleListCoupon" onclick="toggleStatus('<%- item._id %>','<%- item.code %>','<%- item.isActive %>')" type="button" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Deactivate">
                   <i class="bi bi-bookmark-dash"></i>

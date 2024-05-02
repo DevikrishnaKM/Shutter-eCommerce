@@ -10,5 +10,301 @@ const Product = require("../model/productSchema");
 
 
 module.exports={
+ getSalesReport: async (req, res) => {
+        let startDate = req.query.startDate
+          ? new Date(req.query.startDate)
+          : new Date();
     
+        let endDate = req.query.endDate ? new Date(req.query.endDate) : new Date();
+    
+        startDate.setUTCHours(0, 0, 0, 0);
+        // endDate.setUTCHours(23, 59, 59, 999);
+    
+        console.log(startDate, endDate);
+    
+        const locals = { title: "Shutter - Reports" };
+    
+        const orders = await Order.aggregate([
+          {
+            $match: {
+              createdAt: { $gte: startDate, $lte: endDate },
+              status: { $nin: ["Cancelled", "Failed"] },
+            },
+          },
+    
+          {
+            $lookup: {
+              from: "users",
+              localField: "customer_id",
+              foreignField: "_id",
+              as: "customer",
+            },
+          },
+          
+         
+          {
+            $lookup: {
+              from: "products",
+              localField: "items.product_id",
+              foreignField: "_id",
+              as: "items.productDetails",
+            },
+          },
+         
+          {
+            $group: {
+              _id: "$_id",
+              userID: { $first: "$customer" },
+              
+              paymentMethod: { $first: "$paymentMethod" },
+              status: { $first: "$status" },
+              totalAmount: { $first: "$totalPrice" },
+             
+              payable: { $first: "$payable" },
+             
+              createdAt: { $first: "$createdAt" },
+              orderedItems: {
+                $push: {
+                  productDetails: {
+                    productName: "$items.productDetails.productName",
+                    price: "$items.price",
+                  },
+                  quantity: "$items.quantity",
+                  itemTotal: { $multiply: ["$items.price", "$items.quantity"] },
+                },
+              },
+            },
+          },
+        ]);
+    
+       
+        startDate =
+          startDate.getFullYear() +
+          "-" +
+          ("0" + (startDate.getMonth() + 1)).slice(-2) +
+          "-" +
+          ("0" + startDate.getUTCDate()).slice(-2);
+    
+        endDate =
+          endDate.getFullYear() +
+          "-" +
+          ("0" + (endDate.getMonth() + 1)).slice(-2) +
+          "-" +
+          ("0" + endDate.getUTCDate()).slice(-2);
+    
+        res.render("admin/reports/salesReport", {
+          startDate,
+          endDate,
+          orders,
+          locals,
+          layout,
+        });
+},
+salesReportExcel: async (req, res) => {
+    let startDate = req.query.startDate
+      ? new Date(req.query.startDate)
+      : new Date();
+    let endDate = req.query.endDate ? new Date(req.query.endDate) : new Date();
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    console.log(startDate, endDate);
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+          status: { $nin: ["Cancelled", "Failed"] },
+        },
+      },
+      
+      {
+        $lookup: {
+          from: "users",
+          localField: "customer_id",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.product_id",
+          foreignField: "_id",
+          as: "items.productDetails",
+        },
+      },
+      
+      {
+        $group: {
+          _id: "$_id",
+          userID: { $first: "$customer" },
+          
+          paymentMethod: { $first: "$paymentMethod" },
+          status: { $first: "$status" },
+          totalAmount: { $first: "$totalPrice" },
+         
+          payable: { $first: "$payable" },
+          
+          createdAt: { $first: "$createdAt" },
+          orderedItems: {
+            $push: {
+              productDetails: {
+                productName: "$items.productDetails.productName",
+                price: "$items.price",
+              },
+              quantity: "$items.quantity",
+             
+              itemTotal: { $multiply: ["$items.price", "$items.quantity"] },
+            },
+          },
+        },
+      },
+    ]);
+
+    const workBook = new excelJS.Workbook();
+    const worksheet = workBook.addWorksheet("Sales Report");
+
+    worksheet.columns = [
+      { header: "Order ID", key: "_id" },
+      { header: "Customer ID", key: "userID.userId" },
+      { header: "Payment Method", key: "paymentMethod" },
+      { header: "Payment Status", key: "status" },
+      
+      { header: "Total Amount", key: "totalAmount" },
+      
+      { header: "Final Price", key: "payable" },
+     
+      { header: "Order Date", key: "createdAt" },
+      {
+        header: "Ordered Items",
+        key: "orderedItems",
+        style: {
+          font: { bold: true },
+        },
+      },
+    ];
+
+    orders.forEach((order) => {
+      worksheet.addRow(order);
+    });
+
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.font = { bold: true };
+    });
+
+    res.setHeader(
+      "content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheatml.sheet"
+    );
+    res.setHeader(
+      "content-Disposition",
+      "attachment; filename=sales-report_.xlsx"
+    );
+
+    return workBook.xlsx.write(res).then(() => {
+      res.status(200);
+    });
+},
+getSalesReportPdf: async (req, res) => {
+    try {
+      let startDate = req.query.startDate
+        ? new Date(req.query.startDate)
+        : new Date();
+      let endDate = req.query.endDate
+        ? new Date(req.query.endDate)
+        : new Date();
+      startDate.setUTCHours(0, 0, 0, 0);
+      endDate.setUTCHours(23, 59, 59, 999);
+
+      console.log(startDate, endDate);
+
+      const locals = {
+        title: "Shutter - Reports", 
+        filename: `Shutter- Sales Reports ${startDate.toDateString()} - ${endDate.toDateString()}`, 
+      };
+
+      const orders = await Order.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: startDate, $lte: endDate },
+            status: { $nin: ["Cancelled", "Failed"] },
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "customer_id",
+            foreignField: "_id",
+            as: "customer",
+          },
+        },
+        
+        {
+          $lookup: {
+            from: "products",
+            localField: "items.product_id",
+            foreignField: "_id",
+            as: "items.productDetails",
+          },
+        },
+        
+        {
+          $group: {
+            _id: "$_id",
+            userID: { $first: "$customer" },
+           
+            paymentMethod: { $first: "$paymentMethod" },
+            status: { $first: "$status" },
+            totalAmount: { $first: "$totalPrice" },
+            
+            payable: { $first: "$payable" },
+            
+            createdAt: { $first: "$createdAt" },
+            orderedItems: { $push: "$items" },
+          },
+        },
+      ]);
+
+      // Ordered Item details
+      orders.forEach((order) => {
+        order.orderedItems = order.orderedItems.map((item) => ({
+          productDetails: {
+            productName: item.productDetails[0].productName,
+            price: item.price,
+          },
+          quantity: item.quantity,
+          
+          itemTotal: item.price * item.quantity,
+        }));
+      });
+
+      startDate =
+        startDate.getFullYear() +
+        "-" +
+        ("0" + (startDate.getMonth() + 1)).slice(-2) +
+        "-" +
+        ("0" + startDate.getUTCDate()).slice(-2);
+
+      endDate =
+        endDate.getFullYear() +
+        "-" +
+        ("0" + (endDate.getMonth() + 1)).slice(-2) +
+        "-" +
+        ("0" + endDate.getUTCDate()).slice(-2);
+
+      // endDate = endDate + " 23:59:59";
+      
+
+      res.render("admin/reports/pdf", {
+        startDate,
+        endDate,
+        orders,
+        locals,
+        layout: './layouts/docs/sales-report.ejs',
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  },
 }

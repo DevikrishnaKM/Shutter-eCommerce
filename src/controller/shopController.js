@@ -99,15 +99,13 @@ module.exports = {
           sortQuery = { regularPrice: -1 };
         }
       }
-      let filterQuery = {
-        isBlocked: false,
-      };
+      let filterQuery = {};
 
-      if (search && search!=="") {
+      if (search) {
         filterQuery.productName = { $regex: search, $options: "i" };
       }
-      if (categoryID && typeof categoryID !== undefined) {
-        filterQuery.category = { $regex: categoryID, $options: "i"};
+      if (categoryID) {
+        filterQuery.category = categoryID;
       }
       const products = await Product.find(filterQuery)
       .sort(sortQuery)
@@ -117,7 +115,7 @@ module.exports = {
       const count = await Product.find(filterQuery).countDocuments();
 
       const categories = await Category.find({ isActive: true });
-      return res.render("shop/search.ejs", {
+      return res.render("shop/search", {
         sortBy,
         categoryID,
         products,

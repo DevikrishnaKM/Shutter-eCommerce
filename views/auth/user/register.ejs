@@ -1,75 +1,64 @@
 <div class="container">
-    <div class="card container" style="max-width: 500px;margin-top: 14%;margin-bottom: 14%;">
-        <% if (success.length> 0) { %>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong class="text-capitalize"><%- success %>!</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <% } %>
-                <% if (error.length> 0) { %>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <strong class="text-capitalize"><%- error %></strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <% } %>
-                        <h3>Sign Up</h3>
-                        <form action="/register" method="POST" class="row login_form" id="register_form">
-                            <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="username" name="username"
-                                    placeholder="Username" onfocus="this.placeholder = ''"
-                                    onblur="this.placeholder = 'Username'">
-                                <small></small>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="col form-group">
-                                        <input type="text" class="form-control" id="firstName" name="firstName"
-                                            placeholder="First Name" onfocus="this.placeholder = ''"
-                                            onblur="this.placeholder = 'First Name'">
-                                        <small></small>
-                                    </div>
-                                    <div class="col form-group">
-                                        <input type="text" class="form-control" id="lastName" name="lastName"
-                                            placeholder="Last Name" onfocus="this.placeholder = ''"
-                                            onblur="this.placeholder = 'Last Name'">
-                                        <small></small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="email" name="email"
-                                    placeholder="Email Address" onfocus="this.placeholder = ''"
-                                    onblur="this.placeholder = 'Email Address'">
-                                <small></small>
-                            </div>
-                            <div class="col-md-12 form-group">
-                                <div class="d-flex align-items-center">
-                                    <input type="password" class="form-control" id="password" name="password"
-                                        placeholder="Password" onfocus="this.placeholder = ''"
-                                        onblur="this.placeholder = 'Password'">
-                                    <i class="bi bi-eye-slash" id="togglePassword"
-                                        style="position: relative;z-index: 8; left: -30px; width: 0%; cursor: pointer;"></i>
-                                    <small></small>
-                                </div>
-                            </div>
-                            <div class="col-md-12 form-group">
-                                <div class="d-flex align-items-center">
-                                    <input type="password" class="form-control password" id="confirmPassword"
-                                        name="confirmPassword" placeholder="Confirm Password"
-                                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'">
-                                    <i class="bi bi-eye-slash" id="togglePasswordConfirm"
-                                        style="position: relative;z-index: 8; left: -30px; width: 0%; cursor: pointer;"></i>
-                                    <small></small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 form-group">
-                                <button type="submit" value="submit" class="btn btn-primary w-100">Register</button>
-                            </div>
-                            <p class="text-center text-muted mt-5 mb-3 ">Have already an account? <a href="/login"
-                                class="fw-bold text-body"><u>Login here</u></a></p>
-                        </form>
+  <div class="card container" style="max-width: 500px;margin-top: 14%;margin-bottom: 14%;">
+    <% if (success.length> 0) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <strong class="text-capitalize"><%- success %>!</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    <% } %>
+    <% if (error.length> 0) { %>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <strong class="text-capitalize"><%- error %></strong>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <% } %>
+    <h3>Sign Up</h3>
+    <form action="/register" method="POST" class="row login_form" id="register_form">
+      <div class="col-md-12 form-group">
+        <input type="text" class="form-control" id="username" name="username" placeholder="Username" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Username'">
+        <small></small>
+      </div>
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col form-group">
+            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'First Name'">
+            <small></small>
+          </div>
+          <div class="col form-group">
+            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Last Name'">
+            <small></small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 form-group">
+        <input type="text" class="form-control" id="email" name="email" placeholder="Email Address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email Address'">
+        <small></small>
+      </div>
+      <div class="col-md-12 form-group">
+        <input type="text" class="form-control" id="referral" name="referral" placeholder="Referral Code (optional)" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Referral Code'" value="<%- locals.referralCode ? locals.referralCode : '' %>">
+        <small></small>
+      </div>
+      <div class="col-md-12 form-group">
+        <div class="d-flex align-items-center">
+          <input type="password" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+          <i class="bi bi-eye-slash" id="togglePassword" style="position: relative;z-index: 8; left: -30px; width: 0%; cursor: pointer;"></i>
+          <small></small>
+        </div>
+      </div>
+      <div class="col-md-12 form-group">
+        <div class="d-flex align-items-center">
+          <input type="password" class="form-control password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'">
+          <i class="bi bi-eye-slash" id="togglePasswordConfirm" style="position: relative;z-index: 8; left: -30px; width: 0%; cursor: pointer;"></i>
+          <small></small>
+        </div>
+      </div>
+
+      <div class="col-md-12 form-group">
+        <button type="submit" value="submit" class="btn btn-primary w-100">Register</button>
+      </div>
+      <p class="text-center text-muted mt-5 mb-3 ">Have already an account? <a href="/login" class="fw-bold text-body"><u>Login here</u></a></p>
+    </form>
+  </div>
 
 </div>
 

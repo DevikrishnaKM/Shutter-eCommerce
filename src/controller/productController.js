@@ -17,7 +17,7 @@ module.exports = {
           { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
           
         ],
-      })
+      }).populate("category")
         .sort({ createdOn: -1 })
         .limit(limit * 1)
         .skip((page - 1) * limit)
@@ -101,7 +101,7 @@ module.exports = {
   },
   getEditProduct: async (req, res) => {
     try {
-      const findProduct = await Product.findById(req.query.id).populate(
+      const findProduct = await Product.findById(req.params.id).populate(
         "category"
       );
 
@@ -117,6 +117,49 @@ module.exports = {
     }
   },
   editProduct: async (req,res)=>{
+    console.log(req.body)
+    try {
+      const id = req.params.id
+      const data = req.body
+      const images = []
+      if (req.files && req.files.length > 0) {
+          for (let i = 0; i < req.files.length; i++) {
+              images.push(req.files[i].filename);
+          }
+      }
+      console.log(req.files)
+      if (req.files.length > 0) {
+          console.log("Yes image is there")
+          const updatedProduct = await Product.findByIdAndUpdate(id, {
+              id: Date.now(),
+              productName: data.productName,
+              description: data.description,
+              category: data.category,
+              regularPrice: data.regularPrice,
+              quantity: data.quantity,
+              createdOn: new Date(),
+              productImage: images
+          }, { new: true })
+          console.log("product updated");
+          res.redirect("/admin/products")
+      } else {
+          console.log("No images i ther")
+          const updatedProduct = await Product.findByIdAndUpdate(id, {
+              id: Date.now(),
+              productName: data.productName,
+              description: data.description,
+              category: data.category,
+              regularPrice: data.regularPrice,
+              salePrice: data.regularPrice,
+              quantity: data.quantity,
+              createdOn: new Date(),
+          }, { new: true })
+          console.log("product updated");
+          res.redirect("/admin/products")
+      }
+  } catch (error) {
+      console.log(error.message);
+  }
 
   },
   blockProduct: async (req,res)=>{
@@ -159,5 +202,54 @@ module.exports = {
       console.log(error)
     }
   },
+  getProdDetails: async (req, res) => {
+    const productId = req.params.id;
+    try {
+      const product = await Product.findOne({ _id: productId });
 
+      if (!product) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Product not found" });
+      }
+
+      return res.status(200).json({ success: true, product });
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  },
+  getStocks: async (req, res) => {
+    try {
+      let perPage = 9;
+      let page = req.query.page || 1;
+
+      const products = await Product.find()
+        .sort({ createdAt: -1 })
+        .populate("category")
+        .skip(perPage * page - perPage)
+        .limit(perPage)
+        .exec();
+
+      const count = await Product.find().countDocuments();
+      const nextPage = parseInt(page) + 1;
+      const hasNextPage = nextPage <= Math.ceil(count / perPage);
+
+      // console.log(products);
+      console.log(products[0]);
+      res.render("admin/products/stocks", {
+        products,
+        layout,
+        current: page,
+        pages: Math.ceil(count / perPage),
+        nextPage: hasNextPage ? nextPage : null,
+        currentRoute: "/admin/products/",
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
 };

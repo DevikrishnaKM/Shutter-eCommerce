@@ -28,7 +28,8 @@
 
 
 
-    <div class="right mt-5">
+    <div class="right mt-5 text-capitalize">
+
         <table class="table table-striped">
             <thead>
               <tr>
@@ -37,7 +38,6 @@
                 <th scope="col"><b>Category</b></th>
                 <th scope="col"><b>Regular Price</b></th>
                 <th scope="col"><b>quantity</b></th>
-                <th scope="col"><b>description</b></th>
                 <th scope="col"><b>Action</b></th>
                 <th scope="col"><b>Edit</b></th>
               </tr>
@@ -49,10 +49,10 @@
                         <td>
                             <img src="/uploads/product-images/crp/<%- data[i].images[0] %>" style="width: 7rem;" alt="" class="img-fluid img-thumbnail">
                           </td>
-                        <td><%= data[i].category %></td>
+                        <td><%= data[i].category.name %></td>
                         <td>₹<%= data[i].regularPrice %></td>
                         <td><%= data[i].quantity %></td>
-                        <td><%= data[i].description%></td>
+                       
                        
                         <td> 
                            <% if (data[i].isBlocked === false) { %>

@@ -3,8 +3,38 @@ const Address = require("../model/addressSchema");
 const Product = require("../model/productSchema");
 const WishList = require("../model/wishlistSchema");
 const Order = require("../model/orderSchema");
+const Wallet = require("../model/walletSchema");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
+
+// Razorpay
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+
+var instance = new Razorpay({
+  key_id: process.env.RAZ_KEY_ID,
+  key_secret: process.env.RAZ_KEY_SECRET,
+});
+
+const createRazorpayOrder = async (order_id, total) => {
+  let options = {
+    amount: total * 100, // amount in the smallest currency unit
+    currency: "INR",
+    receipt: order_id.toString(),
+  };
+  const order = await instance.orders.create(options);
+
+  return order;
+};
+
+function generateRefferalCode(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let referralCode = '';
+  for (let i = 0; i < length; i++) {
+      referralCode += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return referralCode;
+}
 
 module.exports = {
   /**
@@ -157,12 +187,14 @@ module.exports = {
    */
 
   getWishlist: async (req, res) => {
+    console.log(req.body)
     const locals = {
       title: "Shutter - Wishlist",
     };
     let user = await User.findById(req.user.id);
-    let wishlist = await WishList.findById(user.wishlist).populate({
+    let wishlist = await WishList.findOne({ userId: req.user.id }).populate({
       path: "products",
+     
     });
     // console.log(wishlist);
     let products;
@@ -182,85 +214,92 @@ module.exports = {
   },
 
   addToWishlist: async (req, res) => {
-    console.log(req.body);
+    console.log(req.body,req.params);
+    
 
-    const { productId } = req.body;
-    let product,
-      user,
-      userWishListID,
-      userWishListData,
-      productsInWishList,
-      productAlreadyInWishList;
+    const productId = req.body.productId;
 
     try {
-      product = await Product.findById(productId);
-      user = await User.findById(req.user.id);
-
-      if (!product) {
-        console.log("Product not found");
-        return res
-          .status(404)
-          .json({ success: false, message: "Product not found" });
+      const product = await Product.findById(productId);
+      if(!product){
+        res.status(400).json({success:false,message:"product not found"})
+      }
+      const user = await User.findById(req.user.id);
+      if(!user){
+        res.status(400).json({success:false,message:"user not found"})
+      }
+      let wishlist = await WishList.findOne({userId: req.user.id});
+      if(!wishlist){
+        let items=[]
+        items.push(product._id);
+        wishlist = new WishList({
+          userId: user._id,
+          products:items,
+        })
+        await wishlist.save();
+        return res.status(200).json({success:true,message:"added to wishlist"})
       }
 
-      if (!user) {
-        console.log("User not found");
-        return res
-          .status(404)
-          .json({ success: false, message: "User not found" });
-      }
-
-      userWishListID = user.wishlist;
-
-      if (!userWishListID) {
-        const newWishList = new WishList({ userId: user._id });
-        await newWishList.save();
-        userWishListID = newWishList._id;
-        await User.findByIdAndUpdate(user._id, {
-          $set: { wishlist: userWishListID },
-        });
-      }
-
-      userWishListData = await WishList.findById(userWishListID);
-      productsInWishList = userWishListData.products;
-
-      productAlreadyInWishList = productsInWishList.some((existingProduct) =>
-        existingProduct.equals(product._id)
+      let productExist = wishlist.products.find(
+        (item) => item.toString() === product._id.toString()
       );
 
-      if (productAlreadyInWishList) {
-        console.log("Product already exists in wishlist");
-        return res.status(400).json({
-          success: false,
-          message: "Product already exists in wishlist",
-        });
+      if(productExist){
+        return res.status(400).json({success:false,message:"product already in wishlist"})
       }
 
-      await WishList.findByIdAndUpdate(userWishListID, {
-        $push: { products: product._id },
-      });
-
-      console.log("Product added to wishlist");
-      return res
-        .status(201)
-        .json({ success: true, message: "Product added to wishlist" });
+      wishlist.products.push(product._id);
+      await wishlist.save();
+      return res.status(200).json({success:true,message:"added to wishlist"})
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({success:false,message:"Internal server error"})
+    }
+   
+    
+  },
+  removeFromWishlist: async (req, res) => {
+    try {
+      const { productId } = req.body;
+  
+      // Assuming User and WishList models are properly imported
+      const user = await User.findById(req.user.id);
+      const updatedWishList = await WishList.findOneAndUpdate(
+        { userId: user._id },
+        { $pull: { products: productId } },
+        { new: true }
+      );
+  
+      if (updatedWishList) {
+        return res.status(201).json({
+          success: true,
+          message: "Removed item from wishlist",
+        });
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: "Failed to remove product from wishlist. Please try again.",
+        });
+      }
     } catch (error) {
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "An error occurred, server facing issues !",
+        message: "Failed to remove product from wishlist. Please try again.",
       });
     }
   },
+  
 
   // Password Reset From Profile
   changePassword: async (req, res) => {
     try {
-      console.log(req.body);
+      // console.log(req.body);
        const { oldPassword, newPassword, confirmNewPassword } = req.body;
        // Find the user by ID
        let user = await User.findById(req.user.id);
-        console.log(user);
+        // console.log(user);
+        
        // Check if the old password is correct
        let validPass = await bcrypt.compare(oldPassword, user.password);
        if (!validPass) {
@@ -294,4 +333,149 @@ module.exports = {
     }
    },
    
+
+
+/**
+   * User Wallet
+   */
+
+getWallet: async (req, res) => {
+  const locals = {
+    title: "Shutter- User Wallet",
+  };
+
+
+  // TODO : pagination with 14 results per page
+
+  let userWallet = await Wallet.findOne({ userId: req.user.id });
+//  console.log(userWallet)
+  const user = await User.findById(req.user.id);
+  if (userWallet) {
+    userWallet.transactions.reverse();
+  }
+
+  if(!userWallet){
+    userWallet = {
+      balance: 0,
+      transactions: [],
+    }
+  }
+
+  // console.log(userWallet);
+  res.render("user/wallet", {
+    locals,
+    user,
+    userWallet,
+  });
+},
+addToWallet: async (req, res) => {
+  try {
+    // console.log(req.body)
+    const { amount, notes } = req.body;
+    const id = crypto.randomBytes(8).toString("hex");
+    const payment = await createRazorpayOrder(id, amount);
+
+    const user = await User.findOne({ _id: req.user.id });
+
+    if (!payment) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to create payment" });
+    }
+
+    res.json({ success: true, payment, user });
+  } catch (error) {
+    const { message } = error;
+    res.status(500).json({ success: false, message });
+  }
+},
+
+  verifyPayment : async (req, res) => {
+    console.log(req.body)
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body.response;
+    const secret = process.env.RAZ_KEY_SECRET;
+    const {amount} = req.body.order;
+    const userId = req.user.id;
+
+    try {
+      const hmac = crypto
+      .createHmac("sha256", secret)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+      
+    const isSignatureValid = hmac === razorpay_signature;
+    console.log(hmac,razorpay_signature,isSignatureValid)
+
+    if (isSignatureValid) {
+      const wallet = await Wallet.findOne({ userId: userId });
+
+      if (!wallet) {
+        const newWallet = new Wallet({
+          userId,
+          balance: Math.ceil(amount / 100),
+          transactions: [
+            {
+              date: new Date(),
+              amount: Math.ceil(amount / 100),
+              message: "Initial deposit",
+              type: "Credit",
+            },
+          ],
+        });
+        await newWallet.save();
+        return res
+          .status(200)
+          .json({ success: true, message: "Wallet created successfully" });
+      } else {
+        wallet.balance += Math.ceil(amount / 100);
+        wallet.transactions.push({
+          date: new Date(),
+          amount: Math.ceil(amount / 100),
+          message: "Money added to wallet from Razorpay",
+          type: "Credit",
+        });
+
+        await wallet.save();
+        return res
+          .status(200)
+          .json({
+            success: true,
+            message: "Money added to wallet successfully",
+          });
+      }
+    }
+    } catch (error) {
+      res
+      .status(500)
+      .json({ success: false, message: "Internal server error" })
+    }
+
+  },
+
+
+  getRefferals: async(req, res) => {
+    const locals = {
+      title: "Shutter - User Refferals"
+    }
+
+    const user = await User.findOne({ _id: req.user.id });
+
+    if(!user.referralCode){
+      const refferalCode = generateRefferalCode(8);
+
+      user.referralCode = refferalCode;
+      await user.save();
+    }
+
+    // console.log(user);
+
+    successfullRefferals = user.successfullRefferals.reverse();
+
+    res.render("user/refferals", {
+      locals,
+      user,
+      refferalCode: user.referralCode,
+      successfullRefferals
+    })
+  },
 };

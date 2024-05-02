@@ -60,8 +60,24 @@
               </div><!-- End .rating-container -->
 
               <div class="product-price">
-                Rs.<%- product.regularPrice %>
+                <% if (!product.onOffer) { %>
+                  Rs<%- product.regularPrice  %>
+                <% } else { %>   
+                    Rs.<%- product.offerDiscountPrice %>
+                <% } %>
               </div><!-- End .product-price -->
+
+              <div class="product-offer">
+                <% if (!product.onOffer) { %>
+                  <del>
+                    Rs<%- product.actualPrice %>
+                  </del>
+                  <% } else { %>   
+                    <del>
+                      Rs<%- product.regularPrice  %>
+                    </del>
+                <% } %>
+              </div>
 
               <div class="product-content">
                 <p><%- product.description %></p>

@@ -31,9 +31,9 @@
 
           <div class="products mb-3">
             <div class="row justify-content-center">
-              
+
               <% products.forEach(product => { %>
-               
+
               <div class="col-6 col-md-4 col-lg-4">
                 <div class="product product-7 text-center">
                   <figure class="product-media">
@@ -71,7 +71,7 @@
                   </div><!-- End .product-body -->
                 </div><!-- End .product -->
               </div><!-- End .col-sm-6 col-lg-4 -->
-              
+
               <% }) %>
 
             </div><!-- End .row -->
@@ -101,75 +101,203 @@
         </div><!-- End .col-lg-9 -->
 
         <aside class="col-lg-3 order-lg-first">
-            <div class="sidebar sidebar-shop">
-              <div class="widget widget-clean">
-                <label>Filters:</label>
-                <a href="#" class="sidebar-filter-clear ">Clean All</a>
-              </div><!-- End .widget widget-clean -->
-  
-              <div class="widget widget-collapsible">
-                <h3 class="widget-title">
-                  <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
-                    Category
-                  </a>
-                </h3><!-- End .widget-title -->
-  
-                <div class="collapse show" id="widget-1">
-                  <div class="widget-body">
-                    <div class="mt-4 mt-lg-0" id="categories">
-                        <% if (typeof categories !== 'undefined' && categories?.length > 0 ) { %>
-                          <% categories?.forEach((element,i) => { %>
-                          <div class="mb-1">
-                            <div class="form-check">
-                              <input class="form-check-input" id="category-<%- i %>" type="radio" name="category" value="<%- element._id %>" <%- element._id.toString() === categoryID ? 'checked' : '' %> />
-                              <label class="form-check-label text-capitalize" for="category-<%- i %>"><%- element.name %></label>
-                            </div>
-                          </div>
-                          <% }) %>
-                        <% } %>
+          <div class="sidebar sidebar-shop">
+            <div class="widget widget-clean">
+              <label>Filters:</label>
+              <a href="#" class="sidebar-filter-clear ">Clean All</a>
+            </div><!-- End .widget widget-clean -->
+
+            <div class="widget widget-collapsible">
+              <h3 class="widget-title">
+                <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
+                  Category
+                </a>
+              </h3><!-- End .widget-title -->
+
+              <div class="collapse show" id="widget-1">
+                <div class="widget-body">
+                  <div class="mt-4 mt-lg-0" id="categories">
+                    <% if (typeof categories !== 'undefined' && categories?.length > 0 ) { %>
+                    <% categories?.forEach((element,i) => { %>
+                    <div class="mb-1">
+                      <div class="form-check">
+                        <input class="form-check-input" id="category-<%- i %>" type="radio" name="category" value="<%- element._id %>" <%- element._id.toString() === categoryID ? 'checked' : '' %> />
+                        <label class="form-check-label text-capitalize" for="category-<%- i %>"><%- element.name %></label>
                       </div>
-                  </div><!-- End .widget-body -->
-                </div><!-- End .collapse -->
-              </div><!-- End .widget -->
-  
-              <div class="widget widget-collapsible">
-                <h3 class="widget-title">
-                  <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true" aria-controls="widget-5">
-                    Price
-                  </a>
-                </h3><!-- End .widget-title -->
-  
-                <div class="collapse show" id="widget-5">
-                  <div class="widget-body">
-                    <div class="filter-price">
-                      <div class="filter-price-text">
-                        Price Range:
-                        <span id="filter-price-range"></span>
-                      </div><!-- End .filter-price-text -->
-  
-                      <div id="price-slider">
-                        <div class="mb-1">
-                            <div class="form-check">
-                              <input class="form-check-input" id="sortPrice" type="radio" name="sortPrice" value="lowPrice" <% if (sortBy==='lowPrice' ) { %> checked <% } %> />
-                              <label class="form-check-label text-capitalize" for="sortPrice">Price Low to High</label>
-                            </div>
-                          </div>
-                
-                          <div class="mb-1">
-                            <div class="form-check">
-                              <input class="form-check-input" id="sortPrice" type="radio" name="sortPrice" value="highPrice" <% if (sortBy==='highPrice' ) { %> checked <% } %> />
-                              <label class="form-check-label text-capitalize" for="sortPrice">Price High to Low</label>
-                            </div>
-                          </div>
-                
-                      </div><!-- End #price-slider -->
-                    </div><!-- End .filter-price -->
-                  </div><!-- End .widget-body -->
-                </div><!-- End .collapse -->
-              </div><!-- End .widget -->
-            </div><!-- End .sidebar sidebar-shop -->
-          </aside><!-- End .col-lg-3 -->
+                    </div>
+                    <% }) %>
+                    <% } %>
+                  </div>
+                </div><!-- End .widget-body -->
+              </div><!-- End .collapse -->
+            </div><!-- End .widget -->
+
+            <div class="widget widget-collapsible">
+              <h3 class="widget-title">
+                <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true" aria-controls="widget-5">
+                  Price
+                </a>
+              </h3><!-- End .widget-title -->
+
+              <div class="collapse show" id="widget-5">
+                <div class="widget-body">
+                  <div class="filter-price">
+                    <div class="filter-price-text">
+                      Price Range:
+                      <span id="filter-price-range"></span>
+                    </div><!-- End .filter-price-text -->
+
+                    <div id="price-slider">
+                      <div class="mb-1">
+                        <div class="form-check">
+                          <input class="form-check-input" id="sortPrice" type="radio" name="sortPrice" value="lowPrice" <% if (sortBy==='lowPrice' ) { %> checked <% } %> />
+                          <label class="form-check-label text-capitalize" for="sortPrice">Price Low to High</label>
+                        </div>
+                      </div>
+
+                      <div class="mb-1">
+                        <div class="form-check">
+                          <input class="form-check-input" id="sortPrice" type="radio" name="sortPrice" value="highPrice" <% if (sortBy==='highPrice' ) { %> checked <% } %> />
+                          <label class="form-check-label text-capitalize" for="sortPrice">Price High to Low</label>
+                        </div>
+                      </div>
+
+                    </div><!-- End #price-slider -->
+                  </div><!-- End .filter-price -->
+                </div><!-- End .widget-body -->
+              </div><!-- End .collapse -->
+            </div><!-- End .widget -->
+          </div><!-- End .sidebar sidebar-shop -->
+        </aside><!-- End .col-lg-3 -->
       </div><!-- End .row -->
     </div><!-- End .container -->
   </div><!-- End .page-content -->
 </main><!-- End .main -->
+
+<script defer>
+  const searchProduct = document.getElementById('search');
+  const sortSelect = document.getElementById('sortPriceLow') || document.getElementById('sortPriceHigh'); // Assuming 'sortby' is the correct ID for the sort select element
+
+  // Function to handle the change event for categories
+  function handleCategoryChange() {
+    const categoryId = this.value; // Use 'this' to refer to the radio button that triggered the event
+    const sortValue = sortSelect.value;
+    const searchValue = searchProduct.value;
+    const url = `/search/?category=${categoryId || ''}&sortBy=${sortValue}&search=${searchValue}`;
+    window.location.href = url;
+  }
+
+  // Attach the event listener to each category radio button
+  document.querySelectorAll('#categories .form-check-input').forEach(radioButton => {
+    radioButton.addEventListener('change', handleCategoryChange);
+  });
+
+  // Function to handle the change event for brands
+  function handleBrandChange() {
+    const brandId = this.value; // Use 'this' to refer to the radio button that triggered the event
+    const sortValue = sortSelect.value;
+    const searchValue = searchProduct.value;
+    const url = `/search/?brand=${brandId || ''}&sortBy=${sortValue}&search=${searchValue}`;
+    window.location.href = url;
+  }
+
+  // Attach the event listener to each brand radio button
+  document.querySelectorAll('#brands .form-check-input').forEach(radioButton => {
+    radioButton.addEventListener('change', handleBrandChange);
+  });
+
+  // Function to handle the change event for sort options
+  function handleSortChange() {
+    const sortValue = this.value; // Use 'this' to refer to the radio button that triggered the event
+    const categoryId = document.querySelector('#categories .form-check-input:checked')?.value;
+    const searchValue = searchProduct.value;
+    const url = `/search/?category=${categoryId || ''}&sortBy=${sortValue}&search=${searchValue}`;
+    window.location.href = url;
+  }
+
+  // Attach the event listener to each sort radio button
+  document.querySelectorAll('#sortSelect .form-check-input').forEach(radioButton => {
+    radioButton.addEventListener('change', handleSortChange);
+  });
+</script>
+
+
+<script>
+  const addToCart = async (productId) => {
+    console.log(productId);
+    try {
+      const response = await fetch(`/user/add-to-cart/${productId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      Swal.fire({
+        title: 'Success!',
+        text: 'Product added to cart successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    } catch (error) {
+      Swal.fire({
+        title: 'Error!',
+        text: error.message,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
+  }
+
+
+  const addToWishlist = async (productId) => {
+    try {
+      const response = await fetch(`/user/add-to-wishlist/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Network response was not ok.');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Added to Wishlist",
+          text: "Your product has been added to the wishlist.",
+          confirmButtonText: "OK",
+
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.message,
+          confirmButtonText: "OK",
+
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.message, // Display the actual error message
+      });
+    }
+  };
+</script>

@@ -26,7 +26,7 @@ const {cartList} = require("../middlewares/cartMiddleware");
 /* GET users listing. */
 router.get("/", shopController.getHome);
 router.get("/shop", shopController.search);
-router.get("/shop", shopController.getProductList);
+// router.get("/shop", shopController.getProductList);
 router.get("/shop/product/:id", shopController.getProduct);
 router.get("/user/cart", isLoggedIn, cartController.getCart);
 router.post("/user/add-to-cart/", cartController.addToCart);

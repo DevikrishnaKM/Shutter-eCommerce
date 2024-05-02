@@ -1,10 +1,16 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
+const ObjectId = mongoose.Schema.Types.ObjectId;
+
 const userSchema = new mongoose.Schema(
   {
     profileImg: {
       type: String,
+    },
+    wishlist: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "WishList",
     },
     username: {
       type: String,
@@ -37,6 +43,29 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
       immutable: true,
+    },
+    referralCode: {
+      type: String,
+    },
+    referralToken: {
+      type: ObjectId,
+    },
+    successfullRefferals: [{
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+      username: {
+        type: String,
+      },
+      status: {
+        type: String,
+      }
+    }],
+    refferalRewards: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
     token: {
       type: String,

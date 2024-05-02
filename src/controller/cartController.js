@@ -164,9 +164,10 @@ module.exports = {
       }
 
       let currentQuantity = itemExist.quantity
+      console.log(currentQuantity,itemExist,product)
       if(qty>0){
         currentQuantity +=qty;
-        if(product.quantity>=currentQuantity){
+        if(currentQuantity >= product.quantity){
           return res.status(404).json({success:false,message:"product have limited stock"})
         }
       }else{

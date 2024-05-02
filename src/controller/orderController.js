@@ -2,7 +2,7 @@ const Order = require("../model/orderSchema");
 const User = require("../model/userSchema");
 const Product = require("../model/productSchema");
 const Address = require("../model/addressSchema");
-// const Wallet = require("../model/walletSchema");
+const Wallet = require("../model/walletSchema");
 const Return = require("../model/returnSchema");
 const mongoose = require("mongoose");
 
@@ -282,6 +282,24 @@ module.exports = {
     console.error(error);
     return res.status(500).json({success:false,message:"internal server error",error})
    }
+  },
+  returnOrder: async (req, res) => {
+    console.log(req.body);
+    let retrn = new Return({
+      user_id: req.user.id,
+      order_id: req.body.order_id,
+      product_id: req.body.product_id,
+      item_id: req.body.item_id,
+      reason: req.body.reason,
+      status: "pending",
+      comment: req.body.comment,
+    });
+    retrn.save().then((retrn) => {
+      console.log("Return request saved:", retrn);
+    });
+    res.json({
+      success: true,
+    });
   },
   /**
    * Admin Side
