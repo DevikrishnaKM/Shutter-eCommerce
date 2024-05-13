@@ -27,6 +27,7 @@ router.use(isAdmin, (req, res, next) => {
 });
 
 router.get("/", adminController.getDashboard);
+router.get("/chart", adminController.getChartData);
 /**
  * User Management
  */

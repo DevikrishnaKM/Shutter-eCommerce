@@ -117,3 +117,15 @@
     </div><!-- End .container -->
   </div><!-- End .header-bottom -->
 </header><!-- End .header -->
+<script>
+  const searchBar = document.getElementById('search-bar');
+
+  searchBar.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const searchInput = document.getElementById('search');
+    const searchValue = searchInput.value;
+    const searchParams = new URLSearchParams();
+    searchParams.append('search', searchValue);
+    window.location.href = `/shop?${searchParams.toString()}`;
+  })
+</script>

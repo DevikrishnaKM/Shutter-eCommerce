@@ -22,55 +22,6 @@ module.exports = {
       user: req.user,
     });
   },
-  getProductList: async (req, res) => {
-    const locals = {
-      title: "Shutter - Product",
-    };
-
-    let perPage = 12;
-    let page = req.query.page || 1;
-
-    const count = await Product.countDocuments();
-    const nextPage = parseInt(page) + 1;
-    const hasNextPage = nextPage <= Math.ceil(count / perPage);
-
-    const products = await Product.find({ isBlocked: false })
-      .sort({ createdAt: -1 })
-      .skip(perPage * page - perPage)
-      .limit(perPage)
-      .exec();
-
-    console.log(products[0]);
-    const categories = await Category.find({ isActive: true });
-    res.render("shop/productList", {
-      locals,
-      products,
-      categories,
-      current: page,
-      pages: Math.ceil(count / perPage),
-      nextPage: hasNextPage ? nextPage : null,
-    });
-  },
-  getProduct: async (req,res)=>{
-    const productId = req.params.id;
-    console.log(productId);
-
-    try {
-      
-       const productData = await Product.findById(productId);
-       console.log(productData);
-       
-      // Check if product data was found
-      if (!productData || productData.length === 0) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-      res.render('shop/productDetail',{
-        product: productData,
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  },
   search: async (req,res)=>{
     try {
       console.log(req.query);
@@ -133,4 +84,54 @@ module.exports = {
       res.status(400).json({success:false,message:error.message});
     }
   },
+  // getProductList: async (req, res) => {
+  //   const locals = {
+  //     title: "Shutter - Product",
+  //   };
+
+  //   let perPage = 12;
+  //   let page = req.query.page || 1;
+
+  //   const count = await Product.countDocuments();
+  //   const nextPage = parseInt(page) + 1;
+  //   const hasNextPage = nextPage <= Math.ceil(count / perPage);
+
+  //   const products = await Product.find({ isBlocked: false })
+  //     .sort({ createdAt: -1 })
+  //     .skip(perPage * page - perPage)
+  //     .limit(perPage)
+  //     .exec();
+
+  //   console.log(products[0]);
+  //   const categories = await Category.find({ isActive: true });
+  //   res.render("shop/productList", {
+  //     locals,
+  //     products,
+  //     categories,
+  //     current: page,
+  //     pages: Math.ceil(count / perPage),
+  //     nextPage: hasNextPage ? nextPage : null,
+  //   });
+  // },
+  getProduct: async (req,res)=>{
+    const productId = req.params.id;
+    console.log(productId);
+
+    try {
+      
+       const productData = await Product.findById(productId);
+       console.log(productData);
+       
+      // Check if product data was found
+      if (!productData || productData.length === 0) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.render('shop/productDetail',{
+        product: productData,
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  },
+ 
 };

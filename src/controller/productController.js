@@ -135,7 +135,7 @@ module.exports = {
               productName: data.productName,
               description: data.description,
               category: data.category,
-              regularPrice: data.regularPrice,
+              salePrice: data.regularPrice,
               quantity: data.quantity,
               createdOn: new Date(),
               productImage: images

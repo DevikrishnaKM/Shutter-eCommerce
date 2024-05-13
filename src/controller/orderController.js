@@ -199,14 +199,11 @@ module.exports = {
       if (isInReturn) {
         for (const order of orderDetails) {
           const orderProductId = (await order.items.product_id).toString();
-          const orderItemId = (await order.items.orderID).toString();
+
           const returnProductId = isInReturn.product_id.toString();
           const returnItemId = isInReturn.item_id.toString();
 
-          if (
-            orderProductId === returnProductId &&
-            orderItemId === returnItemId
-          ) {
+          if (orderProductId === returnProductId) {
             order.items.inReturn = false;
             order.items.return = false;
             order.items.needHelp = false;
@@ -216,7 +213,6 @@ module.exports = {
 
           if (
             orderProductId === returnProductId &&
-            orderItemId === returnItemId &&
             isInReturn.status === "approved"
           ) {
             order.items.inReturn = true;
@@ -228,7 +224,6 @@ module.exports = {
 
           if (
             orderProductId === returnProductId &&
-            orderItemId === returnItemId &&
             order.items.status === "Returned"
           ) {
             order.items.track = 100;
@@ -251,37 +246,113 @@ module.exports = {
   },
   // Cancel and Return
   cancelOrder: async (req, res) => {
-   console.log(req.params)
+    console.log(req.params);
 
-   const {id,itemId} = req.params;
-   try {
-    const order = await Order.findOne({_id: id,"items.product_id":itemId});
-    if(!order){
-      return res.status(400).json({success:false,message:"order is not found"})
-    }
-    console.log(order)
-
-    const updateOrder = await Order.updateOne(
-      {
-        _id : id,
+    const { id, itemId } = req.params;
+    try {
+      const order = await Order.findOne({
+        _id: id,
         "items.product_id": itemId,
-      },
-      {
-        $set : {
-          "items.$.status" : "Cancelled",
-          "items.$.cancelled_on" : new Date()
+      });
+      if (!order) {
+        return res
+          .status(400)
+          .json({ success: false, message: "order is not found" });
+      }
+      console.log(order);
+
+      const updatedOrder = await Order.updateOne(
+        {
+          _id: id,
+          "items.product_id": itemId,
         },
-      },
-      {new : true}
-    )
-    
-    
-    return res.status(200).json({success:true,message:"order cancelled",order})
-    
-   } catch (error) {
-    console.error(error);
-    return res.status(500).json({success:false,message:"internal server error",error})
-   }
+        {
+          $set: {
+            "items.$.status": "Cancelled",
+            "items.$.cancelled_on": new Date(),
+          },
+        },
+        { new: true }
+      );
+      console.log(updatedOrder);
+      if (!updatedOrder) {
+        return res.status(500).json({ message: "Failed to cancel order." });
+      }
+
+      if (
+        order.paymentMethod === "Wallet" ||
+        order.paymentMethod === "Online"
+      ) {
+        let price = await Order.aggregate([
+          {
+            $match: {
+              _id: new mongoose.Types.ObjectId(id),
+            },
+          },
+          {
+            $unwind: "$items",
+          },
+          {
+            $project: {
+              _id: 0,
+              itemTotal: "$items.itemTotal",
+            },
+          },
+        ]);
+        console.log(price);
+
+        const wallet = await Wallet.findOne({ userId: req.user.id });
+
+        if (!wallet) {
+          const newWallet = new Wallet({
+            userId: req.user.id,
+            balance: parseInt(price[0].itemTotal),
+            transactions: [
+              {
+                date: new Date(),
+                amount: parseInt(price[0].itemTotal),
+                message: "Order cancelled successfully",
+                type: "Credit",
+              },
+            ],
+          });
+
+          await newWallet.save();
+        } else {
+          wallet.balance =
+            parseInt(wallet.balance) + parseInt(price[0].itemTotal);
+
+          wallet.transactions.push({
+            date: new Date(),
+            amount: parseInt(price[0].itemTotal),
+            message: "Order cancelled successfully",
+            type: "Credit",
+          });
+
+          await wallet.save();
+        }
+      }
+
+      const updateOrder = await Order.findOne({
+        _id: id,
+      });
+      console.log(updateOrder);
+
+      
+
+      res.status(200).json({
+        message: "Order cancelled successfully.",
+        order: updatedOrder,
+      });
+      
+
+     
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ success: false, message: "internal server error", error });
+    }
   },
   returnOrder: async (req, res) => {
     console.log(req.body);
@@ -538,5 +609,170 @@ module.exports = {
       console.error(error);
       res.status(500).json({ success: false, message: "Server error." });
     }
+  },
+  //invoice
+  getInvoice: async (req, res) => {
+    const invoiceId = `SS${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const locals = {
+      title: `Invoice - ${invoiceId}`,
+    };
+    const { id, itemId } = req.params;
+    console.log(id, itemId);
+
+    let order = await Order.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $unwind: "$items",
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.product_id",
+          foreignField: "_id",
+          as: "items.product",
+        },
+      },
+
+      {
+        // change product details to object
+        $set: {
+          "items.product": {
+            $arrayElemAt: ["$items.product", 0],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          items: 1,
+          shippingAddress: 1,
+          paymentMethod: 1,
+          totalPrice: 1,
+          coupon: 1,
+          couponDiscount: 1,
+          payable: 1,
+          categoryDiscount: 1,
+          paymentStatus: 1,
+          orderStatus: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+    ]);
+    console.log(order[0]);
+    res.render("user/invoice-pdf", {
+      order: order[0],
+      user: req.user,
+
+      invoiceId,
+      locals,
+      layout: "./layouts/docs/invoice.ejs",
+    });
+  },
+  downloadInvoice: async (req, res) => {
+    const { id, itemId } = req.params;
+
+    const order = await Order.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $unwind: "$items",
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.product_id",
+          foreignField: "_id",
+          as: "items.product",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          items: 1,
+          shippingAddress: 1,
+          paymentMethod: 1,
+          totalPrice: 1,
+          coupon: 1,
+          couponDiscount: 1,
+          payable: 1,
+          categoryDiscount: 1,
+          paymentStatus: 1,
+          orderStatus: 1,
+          createdAt: 1,
+        },
+      },
+    ]);
+
+    console.log(order[0].items);
+    var data = {
+      apiKey: "free", // Please register to receive a production apiKey: https://app.budgetinvoice.com/register
+      mode: "development", // Production or development, defaults to production
+      images: {
+        // The logo on top of your invoice
+        logo: "https://public.budgetinvoice.com/img/logo_en_original.png",
+      },
+      // Your own data
+      sender: {
+        company: "Shutter",
+        address: "new street 5226",
+        zip: "8974 AB",
+        city: "new town",
+        country: "newcountry",
+      },
+      // Your recipient
+      client: {
+        company: order[0].shippingAddress.name,
+        address: order[0].shippingAddress.address,
+        zip: order[0].shippingAddress.zipcope,
+        city: order[0].shippingAddress.city,
+        country: "India",
+      },
+      information: {
+        // Invoice number
+        number: order[0].items.product_nameid,
+        // Invoice data
+        date: new Date().toISOString().slice(0, 10),
+      },
+      products: [
+        {
+          quantity: order[0].quantity,
+          description: order[0].items.product[0].productName,
+          taxRate: 0,
+          price: order[0].items.itemTotal,
+        },
+      ],
+      // The message you would like to display on the bottom of your invoice
+      bottomNotice: "Kindly pay your invoice within 15 days.",
+      // Settings to customize your invoice
+      settings: {
+        currency: "INR", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
+      },
+    };
+
+    //Create your invoice! Easy!
+    const result = await easyinvoice.createInvoice(data);
+    console.log("PDF base64 string: ", result.pdf);
+
+    // Convert base64 string to buffer
+    const pdfBuffer = Buffer.from(result.pdf, "base64");
+
+    // Set headers for file download
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=${order[0].items._id}_invoice_${Date.now()}.pdf`
+    );
+
+    // Send the PDF buffer as a response
+    res.send(pdfBuffer);
   },
 };

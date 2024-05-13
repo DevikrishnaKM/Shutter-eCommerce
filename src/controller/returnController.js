@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const User = require("../model/userSchema");
 const Returns = require("../model/returnSchema");
 const Order = require("../model/orderSchema");
-
+const Product = require("../model/productSchema");
 const layout = "./layouts/adminLayout";
 
 module.exports = {

@@ -76,6 +76,11 @@ router.post('/add-to-wallet', userController.addToWallet)
 router.post('/verify-wallet-payment', userController.verifyPayment)
 
 router.get("/referrals", userController.getRefferals);
+
+// invoice
+router.get("/invoice/:id/:itemId", orderController.getInvoice);
+router.get("/invoice/download/:id/:itemId", orderController.downloadInvoice);
+
 module.exports = router;
 
 

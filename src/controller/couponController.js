@@ -278,12 +278,12 @@ module.exports = {
 
        // Calculate the discount amount based on the coupon's rateOfDiscount
        let discountAmount = totalPrice * (couponCode.rateOfDiscount / 100);
-
        // Check if the discount amount is greater than the maximum discount
        if (discountAmount > couponCode.maximumDiscount) {
          discountAmount = couponCode.maximumDiscount;
-       }
- 
+        }
+        
+        console.log(discountAmount)
        cart.couponDiscount = discountAmount;
        cart.coupon = couponCode._id;
        await cart.save();

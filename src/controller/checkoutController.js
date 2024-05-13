@@ -121,10 +121,16 @@ module.exports = {
     });
 
     let totalPrice = 0;
+    let totalPriceBeforeOffer = 0;
     // Correctly declare the variable before the loop
     for (let prod of cart.items) {
-      prod.itemTotal = prod.Price * prod.quantity;
+      prod.price = prod.product_id.onOffer
+        ? prod.product_id.offerDiscountPrice
+        : prod.product_id.regularPrice;
+
+      prod.itemTotal = prod.price * prod.quantity;
       totalPrice += prod.itemTotal;
+      totalPriceBeforeOffer += prod.price ;
     }
 
     // Apply coupon discount if applicable
@@ -147,13 +153,38 @@ module.exports = {
       }
     }
 
+    // Correctly calculate cartCount
+    let cartCount = cart.items.length;
+
     const coupons = await Coupon.find({
       isActive: true,
-
+      minPurchaseAmount: { $lte: totalPriceBeforeOffer },
       expirationDate: { $gte: Date.now() },
       // usedBy: [{ $: req.user.id }],
     });
     console.log(coupons);
+
+    let userWallet = await Wallet.findOne({ userId: req.user.id });
+
+    if(!userWallet) {
+      userWallet = {
+        balance: 0,
+        transactions: [],
+        isInsufficient : true
+
+      }
+    }
+
+    let isCOD = true;
+    if (totalPrice > 10000 ) {
+      isCOD = false;
+    }
+
+    if(totalPrice > userWallet.balance) {
+      userWallet.isInsufficient = true;
+    }else {
+      userWallet.isInsufficient = false;
+    }
 
     const locals = {
       title: "shutter - Checkout",
@@ -161,11 +192,15 @@ module.exports = {
 
     res.render("shop/checkOut", {
       locals,
+      cartCount,
+      isCOD,
+      wallet : userWallet,
       cart,
       coupons,
       address,
       couponDiscount,
       totalPrice,
+      checkout: true,
     });
   },
 
@@ -554,26 +589,14 @@ module.exports = {
           }
         );
 
-        let couponId = await Order.findOne({ _id: order_id }).populate(
-          "coupon"
-        );
-
+        let couponId = await Order.findOne({ _id: order_id })
         console.log(couponId);
-        if (couponId.coupon) {
-          couponId = couponId.coupon._id;
-          if (couponId) {
-            let updateCoupon = await Coupon.findByIdAndUpdate(
-              { _id: couponId },
-              {
-                $push: { usedBy: customer_id },
-              },
-              {
-                new: true,
-              }
-            );
-          }
+        if(couponId.coupon){
+          await Coupon.findOneAndUpdate(
+            { _id: couponId.coupon },
+            { $push: { usedBy: { userId: req.user.id } } }
+          );
         }
-        console.log(updateCoupon);
         req.session.order = {
           status: true,
         };

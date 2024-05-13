@@ -8,99 +8,115 @@ const fs = require("fs");
 const Order = require("../model/orderSchema");
 const Product = require("../model/productSchema");
 
+module.exports = {
+  getSalesReport: async (req, res) => {
+    let startDate = req.query.startDate
+      ? new Date(req.query.startDate)
+      : new Date();
 
-module.exports={
- getSalesReport: async (req, res) => {
-        let startDate = req.query.startDate
-          ? new Date(req.query.startDate)
-          : new Date();
-    
-        let endDate = req.query.endDate ? new Date(req.query.endDate) : new Date();
-    
-        startDate.setUTCHours(0, 0, 0, 0);
-        // endDate.setUTCHours(23, 59, 59, 999);
-    
-        console.log(startDate, endDate);
-    
-        const locals = { title: "Shutter - Reports" };
-    
-        const orders = await Order.aggregate([
-          {
-            $match: {
-              createdAt: { $gte: startDate, $lte: endDate },
-              status: { $nin: ["Cancelled", "Failed"] },
-            },
-          },
-    
-          {
-            $lookup: {
-              from: "users",
-              localField: "customer_id",
-              foreignField: "_id",
-              as: "customer",
-            },
-          },
-          
-         
-          {
-            $lookup: {
-              from: "products",
-              localField: "items.product_id",
-              foreignField: "_id",
-              as: "items.productDetails",
-            },
-          },
-         
-          {
-            $group: {
-              _id: "$_id",
-              userID: { $first: "$customer" },
-              
-              paymentMethod: { $first: "$paymentMethod" },
-              status: { $first: "$status" },
-              totalAmount: { $first: "$totalPrice" },
-             
-              payable: { $first: "$payable" },
-             
-              createdAt: { $first: "$createdAt" },
-              orderedItems: {
-                $push: {
-                  productDetails: {
-                    productName: "$items.productDetails.productName",
-                    price: "$items.price",
-                  },
-                  quantity: "$items.quantity",
-                  itemTotal: { $multiply: ["$items.price", "$items.quantity"] },
-                },
+    let endDate = req.query.endDate ? new Date(req.query.endDate) : new Date();
+
+
+    startDate.setUTCHours(0, 0, 0, 0);
+    // endDate.setUTCHours(23, 59, 59, 999);
+
+    // Check if start date is less tahn than end date
+     if ( new Date(startDate) < new Date(endDate)) {
+      req.flash("error", "Start date cannot be less than end date");
+      
+      }
+      
+
+
+    console.log(startDate, endDate);
+
+    const locals = { title: "Shutter - Reports" };
+
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+          status: { $nin: ["Cancelled", "Failed"] },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "customer_id",
+          foreignField: "_id",
+          as: "customer",
+        },
+      },
+      {
+        $lookup: {
+          from: "coupons",
+          localField: "coupon",
+          foreignField: "_id",
+          as: "coupon",
+        },
+      },
+      { $unwind: "$items" },
+
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.product_id",
+          foreignField: "_id",
+          as: "items.productDetails",
+        },
+      },
+
+      {
+        $group: {
+          _id: "$_id",
+          userID: { $first: "$customer" },
+
+          paymentMethod: { $first: "$paymentMethod" },
+          status: { $first: "$status" },
+          totalAmount: { $first: "$totalPrice" },
+
+          payable: { $first: "$payable" },
+          coupon: { $first: "$coupon" },
+          couponDiscount: { $first: "$couponDiscount" },
+          createdAt: { $first: "$createdAt" },
+          orderedItems: {
+            $push: {
+              productDetails: {
+                productName: "$items.productDetails.productName",
+                price: "$items.price",
               },
+              quantity: "$items.quantity",
+              itemTotal: { $multiply: ["$items.price", "$items.quantity"] },
             },
           },
-        ]);
-    
-       
-        startDate =
-          startDate.getFullYear() +
-          "-" +
-          ("0" + (startDate.getMonth() + 1)).slice(-2) +
-          "-" +
-          ("0" + startDate.getUTCDate()).slice(-2);
-    
-        endDate =
-          endDate.getFullYear() +
-          "-" +
-          ("0" + (endDate.getMonth() + 1)).slice(-2) +
-          "-" +
-          ("0" + endDate.getUTCDate()).slice(-2);
-    
-        res.render("admin/reports/salesReport", {
-          startDate,
-          endDate,
-          orders,
-          locals,
-          layout,
-        });
-},
-salesReportExcel: async (req, res) => {
+        },
+      },
+    ]);
+
+    startDate =
+      startDate.getFullYear() +
+      "-" +
+      ("0" + (startDate.getMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + startDate.getUTCDate()).slice(-2);
+
+    endDate =
+      endDate.getFullYear() +
+      "-" +
+      ("0" + (endDate.getMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + endDate.getUTCDate()).slice(-2);
+
+    res.render("admin/reports/salesReport", {
+      startDate,
+      endDate,
+      orders,
+      locals,
+      layout,
+    });
+  },
+  salesReportExcel: async (req, res) => {
     let startDate = req.query.startDate
       ? new Date(req.query.startDate)
       : new Date();
@@ -116,7 +132,7 @@ salesReportExcel: async (req, res) => {
           status: { $nin: ["Cancelled", "Failed"] },
         },
       },
-      
+
       {
         $lookup: {
           from: "users",
@@ -125,7 +141,15 @@ salesReportExcel: async (req, res) => {
           as: "customer",
         },
       },
-      
+      {
+        $lookup: {
+          from: "coupons",
+          localField: "coupon",
+          foreignField: "_id",
+          as: "coupon",
+        },
+      },
+      { $unwind: "$items" },
       {
         $lookup: {
           from: "products",
@@ -134,18 +158,19 @@ salesReportExcel: async (req, res) => {
           as: "items.productDetails",
         },
       },
-      
+
       {
         $group: {
           _id: "$_id",
           userID: { $first: "$customer" },
-          
+
           paymentMethod: { $first: "$paymentMethod" },
           status: { $first: "$status" },
           totalAmount: { $first: "$totalPrice" },
-         
+
           payable: { $first: "$payable" },
-          
+          coupon: { $first: "$coupon" },
+          couponDiscount: { $first: "$couponDiscount" },
           createdAt: { $first: "$createdAt" },
           orderedItems: {
             $push: {
@@ -154,7 +179,7 @@ salesReportExcel: async (req, res) => {
                 price: "$items.price",
               },
               quantity: "$items.quantity",
-             
+
               itemTotal: { $multiply: ["$items.price", "$items.quantity"] },
             },
           },
@@ -170,11 +195,9 @@ salesReportExcel: async (req, res) => {
       { header: "Customer ID", key: "userID.userId" },
       { header: "Payment Method", key: "paymentMethod" },
       { header: "Payment Status", key: "status" },
-      
       { header: "Total Amount", key: "totalAmount" },
-      
       { header: "Final Price", key: "payable" },
-     
+      { header: "Discount Amount", key: "couponDiscount" },
       { header: "Order Date", key: "createdAt" },
       {
         header: "Ordered Items",
@@ -205,8 +228,8 @@ salesReportExcel: async (req, res) => {
     return workBook.xlsx.write(res).then(() => {
       res.status(200);
     });
-},
-getSalesReportPdf: async (req, res) => {
+  },
+  getSalesReportPdf: async (req, res) => {
     try {
       let startDate = req.query.startDate
         ? new Date(req.query.startDate)
@@ -220,8 +243,8 @@ getSalesReportPdf: async (req, res) => {
       console.log(startDate, endDate);
 
       const locals = {
-        title: "Shutter - Reports", 
-        filename: `Shutter- Sales Reports ${startDate.toDateString()} - ${endDate.toDateString()}`, 
+        title: "Shutter - Reports",
+        filename: `Shutter- Sales Reports ${startDate.toDateString()} - ${endDate.toDateString()}`,
       };
 
       const orders = await Order.aggregate([
@@ -239,7 +262,15 @@ getSalesReportPdf: async (req, res) => {
             as: "customer",
           },
         },
-        
+        {
+          $lookup: {
+            from: "coupons",
+            localField: "coupon",
+            foreignField: "_id",
+            as: "coupon",
+          },
+        },
+        { $unwind: "$items" },
         {
           $lookup: {
             from: "products",
@@ -248,18 +279,19 @@ getSalesReportPdf: async (req, res) => {
             as: "items.productDetails",
           },
         },
-        
+
         {
           $group: {
             _id: "$_id",
             userID: { $first: "$customer" },
-           
+
             paymentMethod: { $first: "$paymentMethod" },
             status: { $first: "$status" },
             totalAmount: { $first: "$totalPrice" },
-            
+            coupon: { $first: "$coupon" },
+            couponDiscount: { $first: "$couponDiscount" },
             payable: { $first: "$payable" },
-            
+
             createdAt: { $first: "$createdAt" },
             orderedItems: { $push: "$items" },
           },
@@ -274,7 +306,7 @@ getSalesReportPdf: async (req, res) => {
             price: item.price,
           },
           quantity: item.quantity,
-          
+
           itemTotal: item.price * item.quantity,
         }));
       });
@@ -294,17 +326,16 @@ getSalesReportPdf: async (req, res) => {
         ("0" + endDate.getUTCDate()).slice(-2);
 
       // endDate = endDate + " 23:59:59";
-      
 
       res.render("admin/reports/pdf", {
         startDate,
         endDate,
         orders,
         locals,
-        layout: './layouts/docs/sales-report.ejs',
-      })
+        layout: "./layouts/docs/sales-report.ejs",
+      });
     } catch (error) {
       console.log(error);
     }
   },
-}
+};

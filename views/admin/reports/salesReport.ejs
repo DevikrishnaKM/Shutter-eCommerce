@@ -69,7 +69,8 @@
             <th class="sorting" scope="col">Payment Method</th>
             <th class="sorting" scope="col">Status</th>
             <th class="sorting" scope="col">Total Amount</th>
-
+            <th class="sorting" scope="col">Coupon</th>
+            <th class="sorting" scope="col">Coupon Discount</th>
 
             <th class="sorting" scope="col">Payable</th>
 
@@ -101,7 +102,8 @@
             </td>
             <td><%=order.status%></td>
             <td><%=order.totalAmount%></td>
-
+            <td class="text-uppercase"><%=order.coupon[0]?.code ? order.coupon[0].code : "No Coupon"%></td>
+            <td><%=order.couponDiscount%></td>
             <td><%=order.payable.toFixed(2)%></td>
 
           </tr>
@@ -145,6 +147,8 @@
   
   const startDate = document.getElementById("startDate").value; 
   const endDate = document.getElementById("endDate").value; 
+
+  
   const getExcel = () => {
     console.log(startDate, endDate);
   

@@ -325,7 +325,8 @@ module.exports = {
        await user.save();
    
        req.flash('success', 'Password changed successfully.');
-       return res.status(200).json({success:true,message:"change password successfully"})
+      
+      res.redirect("/user/profile")
     } catch (error) {
        console.error(error); // Log the error for debugging purposes
        req.flash('error', 'An error occurred while changing the password.');

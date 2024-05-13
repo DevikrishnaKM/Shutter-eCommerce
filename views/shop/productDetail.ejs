@@ -70,11 +70,11 @@
               <div class="product-offer">
                 <% if (!product.onOffer) { %>
                   <del>
-                    Rs<%- product.actualPrice %>
+                    Rs<%- product.regularPrice  %>
                   </del>
                   <% } else { %>   
                     <del>
-                      Rs<%- product.regularPrice  %>
+                      Rs<%- product.offerDiscountPrice  %>
                     </del>
                 <% } %>
               </div>

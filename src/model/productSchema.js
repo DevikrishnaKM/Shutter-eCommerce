@@ -22,6 +22,9 @@ const productSchema = mongoose.Schema(
       ref: "category",
       required: true,
     },
+    price: {
+      type: Number,
+    },
     regularPrice: {
       type: Number,
       required: true,
