@@ -62,23 +62,23 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Custom middleware to expose flash messages to views
+app.use(checkBlockedUser,(req, res, next) => {
+  if (req.user && req.isAuthenticated()) {
+    res.locals.user = req.user;
+  }
+  // res.locals.success = req.flash("success");
+  // res.locals.error = req.flash("error");
+  next();
+});
+
+
 
 app.use('/', authRouter);
 app.use('/user/', usersRouter);
 app.use('/',shopRouter);
 app.use("/checkout", checkoutRouter);
 app.use("/admin", adminRouter);
-
-
-// Custom middleware to expose flash messages to views
-app.use(checkBlockedUser,(req, res, next) => {
-  if (req.user && req.isAuthenticated()) {
-    res.locals.user = req.user;
-  }
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
-  next();
-});
 
 
 
