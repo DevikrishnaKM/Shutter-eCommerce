@@ -7,17 +7,7 @@
         <li class="breadcrumb-item active" aria-current="page">Product Details</li>
       </ol>
 
-      <nav class="product-pager ml-auto" aria-label="Product">
-        <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
-          <i class="icon-angle-left"></i>
-          <span>Prev</span>
-        </a>
-
-        <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
-          <span>Next</span>
-          <i class="icon-angle-right"></i>
-        </a>
-      </nav><!-- End .pager-nav -->
+     
     </div><!-- End .container -->
   </nav><!-- End .breadcrumb-nav -->
 
@@ -28,24 +18,33 @@
           <div class="col-md-6">
             <div class="product-gallery product-gallery-vertical">
               <div class="row">
-                <figure class="product-main-image">
-                  <img id="product-zoom" src="/uploads/product-images/crp/<%- product.images[0] %>" data-zoom-image="/uploads/product-images/crp/<%- product.images[0] %>" alt="product image">
+                  <figure class="product-main-image">
+                      <img id="slider"  src="/uploads/product-images/crp/<%- product.images[0] %>" data-zoom-image="/uploads/product-images/crp/<%- product.images[0] %>" alt="product image">
 
-                  <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                    <i class="icon-arrows"></i>
-                  </a>
-                </figure><!-- End .product-main-image -->
+                      <a href="#" id="btn-product-gallery" class="btn-product-gallery">
+                          <i class="icon-arrows"></i>
+                      </a>
+                  </figure><!-- End .product-main-image -->
 
-                <div id="product-zoom-gallery" class="product-image-gallery">
-                  <% product.images.forEach(element => { %>
+                  <div id="product-zoom-gallery" class="product-image-gallery">
+                      <a class="product-gallery-item active" href="#" id="img1" data-image="/uploads/product-images/crp/<%- product.images[0] %>" data-zoom-image="/uploads/product-images/crp/<%- product.images[0] %>">
+                          <img src="/uploads/product-images/crp/<%- product.images[0] %>" alt="product side">
+                      </a>
 
-                  <a class="product-gallery-item active" href="#" data-image="/uploads/product-images/crp/<%- element %>" data-zoom-image="/uploads/product-images/crp/<%- element %>">
-                    <img src="/uploads/product-images/crp/<%- element %>" alt="product side">
-                  </a>
-                  <% }) %>
-                </div><!-- End .product-image-gallery -->
+                      <a class="product-gallery-item" href="#" id="img2" data-image="/uploads/product-images/crp/<%- product.images[1] %>" data-zoom-image="/uploads/product-images/crp/<%- product.images[1] %>">
+                          <img src="/uploads/product-images/crp/<%- product.images[1] %>" alt="product cross">
+                      </a>
+
+                      <a class="product-gallery-item" href="#" id="img3" data-image="/uploads/product-images/crp/<%- product.images[2] %>" data-zoom-image="/uploads/product-images/crp/<%- product.images[2] %>">
+                          <img src="/uploads/product-images/crp/<%- product.images[2] %>" alt="product with model">
+                      </a>
+
+                      <a class="product-gallery-item" href="#" id="img4" data-image="/uploads/product-images/crp/<%- product.images[3] %>" data-zoom-image="/uploads/product-images/crp/<%- product.images[3] %>">
+                          <img src="/uploads/product-images/crp/<%- product.images[3] %>" alt="product back">
+                      </a>
+                  </div><!-- End .product-image-gallery -->
               </div><!-- End .row -->
-            </div><!-- End .product-gallery -->
+          </div><!-- End .product-gallery -->
           </div><!-- End .col-md-6 -->
 
           <div class="col-md-6">
@@ -93,10 +92,7 @@
                   </button>
                 </div><!-- End .details-action-col -->
 
-                <div class="details-action-wrapper">
-                  <a href="#" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
-                  <a href="#" class="btn-product btn-compare" title="Compare"><span>Add to Compare</span></a>
-                </div><!-- End .details-action-wrapper -->
+                
               </div><!-- End .product-details-action -->
 
               <div class="product-details-footer">
@@ -290,4 +286,23 @@
     }
   }
   //    var productData = <%- JSON.stringify(product) %>; // Assuming product data is passed to the view
+
+  let img1 = document.getElementById("img1")
+  let img2 = document.getElementById("img2")
+  let img3 = document.getElementById("img3")
+  let img4 = document.getElementById("img4")
+
+  let slider = document.getElementById("slider")
+  img1.addEventListener("click",()=>{
+    slider.setAttribute("src",img1.getAttribute("data-image"))
+  })
+  img2.addEventListener("click",()=>{
+    slider.setAttribute("src",img2.getAttribute("data-image"))
+  })
+  img3.addEventListener("click",()=>{
+    slider.setAttribute("src",img3.getAttribute("data-image"))
+  })
+  img4.addEventListener("click",()=>{
+    slider.setAttribute("src",img4.getAttribute("data-image"))
+  })
 </script>

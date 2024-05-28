@@ -49,7 +49,7 @@
                     </div><!-- End .product-action-vertical -->
 
                     <div class="product-action">
-                      <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                      <button onclick="addToCart(`<%- product._id %>`)" class="btn-product btn-cart"><span>add to cart</span></button>
                     </div><!-- End .product-action -->
                   </figure><!-- End .product-media -->
 
@@ -174,23 +174,19 @@
               <div class="collapse show" id="widget-5">
                 <div class="widget-body">
                   <div class="filter-price">
-                    <div class="filter-price-text">
-                      Price Range:
-                      <span id="filter-price-range"></span>
-                    </div><!-- End .filter-price-text -->
-
-                    <div id="price-slider">
+                    
+                    <div id="sortSelect">
 
                       <div class="mb-1">
                         <div class="form-check">
-                          <input class="form-check-input" id="sortPrice" type="radio" name="sortPrice" value="lowPrice" <% if (sortBy==='lowPrice' ) { %> checked <% } %> />
+                          <input class="form-check-input" id="sortPriceLow" type="radio" name="sortPrice" value="lowPrice" <% if (sortBy==='lowPrice' ) { %> checked <% } %> />
                           <label class="form-check-label text-capitalize" for="sortPrice">Price Low to High</label>
                         </div>
                       </div>
 
                       <div class="mb-1">
                         <div class="form-check">
-                          <input class="form-check-input" id="sortPrice" type="radio" name="sortPrice" value="highPrice" <% if (sortBy==='highPrice' ) { %> checked <% } %> />
+                          <input class="form-check-input" id="sortPriceHigh" type="radio" name="sortPrice" value="highPrice" <% if (sortBy==='highPrice' ) { %> checked <% } %> />
                           <label class="form-check-label text-capitalize" for="sortPrice">Price High to Low</label>
                         </div>
                       </div>
@@ -240,11 +236,23 @@
     radioButton.addEventListener('change', handleCategoryChange);
   });
 
+ const sortPriceLow = document.getElementById("sortPriceLow")
+ const sortPriceHigh = document.getElementById("sortPriceHigh")
+
+ sortPriceLow.addEventListener("click",()=>{
+  console.log(sortPriceLow.value)
+  handleSortChange(sortPriceLow.value)
+ })
+ sortPriceHigh.addEventListener("click",()=>{
+  console.log(sortPriceHigh.value)
+  handleSortChange(sortPriceHigh.value)
+ })
 
   // Function to handle the change event for sort options
-  function handleSortChange() {
+  function handleSortChange(sortValue) {
     console.log(searchProduct.value);
-    const sortValue = this.value; // Use 'this' to refer to the radio button that triggered the event
+    // const sortValue = this.value; // Use 'this' to refer to the radio button that triggered the event
+    console.log(sortValue,this)
     const categoryId = document.querySelector('#categories .form-check-input:checked')?.value;
     const searchValue = searchProduct.value;
     // console.log(searchValue);
@@ -294,68 +302,60 @@
 
 
   const addToCart = async (productId) => {
-    let user = '<%- typeof user %>';
-
-    // Check if user is undefined
-    if (user === "undefined") {
-      // Use SweetAlert to show a warning and redirect to /login upon confirmation
-      Swal.fire({
-        icon: 'warning',
-        title: 'Oops...',
-        text: 'You need to login to add items to Wishlist!',
-        confirmButtonText: 'Login',
-        showCancelButton: true,
-        reverseButtons: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // Redirect to /login if the user confirms
-          window.location.assign('/login');
-        }
+    try {
+      const response = await fetch(`/user/add-to-cart/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId
+        })
       });
-    } else {
-      console.log(user, productId, variantId, color, size);
-      try {
-        const response = await fetch(`/user/add-to-cart/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            productId,
-            variantId,
-            color,
-            size,
-          })
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Network response was not ok.');
-        }
-
-        const data = await response.json();
-        let cartCount = document.getElementById("cartCount");
-        if (cartCount) {
-          cartCount.innerText = data.count;
-        }
-        Swal.fire({
-          icon: "success",
-          title: "Added to Cart",
-          text: "Your product has been added to the cart.",
-          confirmButtonText: "Continue Shopping",
-        });
-
-      } catch (error) {
-        console.log(error);
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: error.message, // Display the actual error message
-        });
+      console.log(response);
+      if (response.redirected) {
+        window.location.href = response.url;
+        return;
       }
-    }
-  };
 
+      if (response.status === 401) {
+        Swal.fire({
+          title: 'Warning!',
+          text: 'Please log in to add items to your cart.',
+          icon: 'warning',
+          confirmButtonText: 'Log In'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = '/login'; // Redirect to login page
+          }
+        });
+        return; // Exit the function after handling the unauthenticated case
+      }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Network response was not ok.');
+      }
+      const data = await response.json();
+      let cartCount = document.getElementById("cartCount");
+      if (cartCount) {
+        cartCount.innerText = data.count;
+      }
+      Swal.fire({
+        icon: "success",
+        title: "Added to Cart",
+        text: "Your product has been added to the cart.",
+        confirmButtonText: "Continue Shopping",
+      });
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.message, // Display the actual error message
+      });
+    }
+  }
+  
   const addToWishlist = async (productId) => {
     try {
       const response = await fetch(`/user/add-to-wishlist/`, {

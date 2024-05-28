@@ -47,7 +47,7 @@
             <div class="banner-content banner-content-center">
               <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4><!-- End .banner-subtitle -->
               <h3 class="banner-title text-white"><a href="#"><strong>Mirror</strong></h3><!-- End .banner-title -->
-              <a href="#" class="btn btn-outline-white banner-link underline">Shop Now</a>
+              <a href="/shop" class="btn btn-outline-white banner-link underline">Shop Now</a>
             </div><!-- End .banner-content -->
           </div><!-- End .banner -->
         </div><!-- End .col-sm-6 -->
@@ -61,7 +61,7 @@
             <div class="banner-content banner-content-center">
               <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4><!-- End .banner-subtitle -->
               <h3 class="banner-title text-white"><a href="#"><strong>Mirrorless</strong></a></h3><!-- End .banner-title -->
-              <a href="#" class="btn btn-outline-white banner-link underline">Shop Now</a>
+              <a href="/shop" class="btn btn-outline-white banner-link underline">Shop Now</a>
             </div><!-- End .banner-content -->
           </div><!-- End .banner -->
         </div><!-- End .col-sm-6 -->
@@ -164,7 +164,7 @@
                                 </div><!-- End .product-action-vertical -->
   
                                 <div class="product-action">
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    <button onclick="addToCart(`<%- product._id %>`)" class="btn-product btn-cart"><span>add to cart</span></button>
                                 </div><!-- End .product-action -->
                             </figure><!-- End .product-media -->
   
@@ -221,3 +221,59 @@
   </div>
   </section>
 </main><!-- End .main -->
+<script defer>
+  const addToCart = async (productId) => {
+    try {
+      const response = await fetch(`/user/add-to-cart/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId
+        })
+      });
+      console.log(response);
+      if (response.redirected) {
+        window.location.href = response.url;
+        return;
+      }
+
+      if (response.status === 401) {
+        Swal.fire({
+          title: 'Warning!',
+          text: 'Please log in to add items to your cart.',
+          icon: 'warning',
+          confirmButtonText: 'Log In'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = '/login'; // Redirect to login page
+          }
+        });
+        return; // Exit the function after handling the unauthenticated case
+      }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Network response was not ok.');
+      }
+      const data = await response.json();
+      let cartCount = document.getElementById("cartCount");
+      if (cartCount) {
+        cartCount.innerText = data.count;
+      }
+      Swal.fire({
+        icon: "success",
+        title: "Added to Cart",
+        text: "Your product has been added to the cart.",
+        confirmButtonText: "Continue Shopping",
+      });
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: error.message, // Display the actual error message
+      });
+    }
+  }
+</script>
